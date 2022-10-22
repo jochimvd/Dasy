@@ -1,32 +1,34 @@
-import { Outlet, Route, Routes } from "solid-app-router";
-import type { Component } from "solid-js";
+import { Outlet, Route, Routes, useNavigate } from "solid-app-router";
+import { Component, ErrorBoundary } from "solid-js";
 import NavBar from "./components/NavBar";
-import Home from "./pages/Home/Home";
+import Home from "./pages/home/Home";
 import Observations from "./pages/observations/Observations";
 import Observation from "./pages/observations/Observation";
-import Severities from "./pages/settings/severities/Severities";
-import Severity from "./pages/settings/severities/Severity";
-import SeverityEdit from "./pages/settings/severities/SeverityEdit";
-import Categories from "./pages/settings/categories/Categories";
-import Category from "./pages/settings/categories/Category";
-import CategoryEdit from "./pages/settings/categories/CategoryEdit";
-import Consequences from "./pages/settings/consequences/Consequences";
-import Consequence from "./pages/settings/consequences/Consequence";
-import Locations from "./pages/settings/locations/Locations";
-import LocationEdit from "./pages/settings/locations/LocationEdit";
-import Location from "./pages/settings/locations/Location";
-import ConsequenceEdit from "./pages/settings/consequences/ConsequenceEdit";
-import SettingsWrapper from "./pages/settings/SettingsWrapper";
-import Settings from "./pages/settings/Settings";
+import Severities from "./pages/configuration/severities/Severities";
+import Severity from "./pages/configuration/severities/Severity";
+import SeverityEdit from "./pages/configuration/severities/SeverityEdit";
+import Categories from "./pages/configuration/categories/Categories";
+import Category from "./pages/configuration/categories/Category";
+import CategoryEdit from "./pages/configuration/categories/CategoryEdit";
+import Consequences from "./pages/configuration/consequences/Consequences";
+import Consequence from "./pages/configuration/consequences/Consequence";
+import Locations from "./pages/configuration/locations/Locations";
+import LocationEdit from "./pages/configuration/locations/LocationEdit";
+import Location from "./pages/configuration/locations/Location";
+import ConsequenceEdit from "./pages/configuration/consequences/ConsequenceEdit";
+import ConfigurationWrapper from "./pages/configuration/ConfigurationWrapper";
+import General from "./pages/configuration/General";
 import Board from "./pages/board/Board";
+import ObservationEdit from "./pages/observations/ObservationEdit";
+import ErrorBoundaries from "./pages/errors/ErrorBoundaries";
 
 const App: Component = () => {
   return (
     <>
       <NavBar />
 
-      <div class="max-w-7xl mt-4 mx-auto">
-        <div class="mx-4">
+      <ErrorBoundaries>
+        <main class="max-w-7xl mx-auto pt-6 sm:pt-9 sm:px-6 lg:pt-12 lg:px-8">
           <Outlet />
           <Routes>
             <Route path="/" component={Home} />
@@ -36,9 +38,11 @@ const App: Component = () => {
             <Route path="/observations">
               <Route path="/" component={Observations} />
               <Route path="/:id" component={Observation} />
+              <Route path="/:id/edit" component={ObservationEdit} />
+              <Route path="/create" element={<ObservationEdit new={true} />} />
             </Route>
-            <Route path="/settings" component={SettingsWrapper}>
-              <Route path="/" component={Settings} />
+            <Route path="/configuration" component={ConfigurationWrapper}>
+              <Route path="/" component={General} />
               <Route path="/severities">
                 <Route path="/" component={Severities} />
                 <Route path="/:id" component={Severity} />
@@ -68,8 +72,8 @@ const App: Component = () => {
               </Route>
             </Route>
           </Routes>
-        </div>
-      </div>
+        </main>
+      </ErrorBoundaries>
     </>
   );
 };
