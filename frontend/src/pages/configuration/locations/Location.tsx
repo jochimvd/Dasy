@@ -1,23 +1,10 @@
 import { Link, useParams } from "solid-app-router";
 import { Component, createResource, Suspense } from "solid-js";
-import { api, Links } from "../../../utils";
-import { Severity } from "../severities/Severity";
-
-export type Location = {
-  id?: number;
-  name: string;
-  _links?: Links;
-};
-
-type Consequence = {
-  id?: number;
-  name: string;
-  probability: number;
-  _links?: Links;
-};
+import { LocationDto } from "../../../models/Location";
+import { api } from "../../../utils/utils";
 
 export const fetchLocation = async (id: string) => {
-  return await api.get(`locations/${id}`).json<Location>();
+  return await api.get(`locations/${id}`).json<LocationDto>();
 };
 
 const Location: Component = () => {

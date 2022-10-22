@@ -1,25 +1,10 @@
 import { Link, useParams } from "solid-app-router";
 import { Component, createResource, Suspense } from "solid-js";
-import { api, Links } from "../../../utils";
-import { Severity } from "../severities/Severity";
-
-export type Category = {
-  id?: number;
-  name: string;
-  consequence: Consequence;
-  severity: Severity;
-  _links?: Links;
-};
-
-type Consequence = {
-  id?: number;
-  name: string;
-  probability: number;
-  _links?: Links;
-};
+import { CategoryDto } from "../../../models/Category";
+import { api } from "../../../utils/utils";
 
 export const fetchCategory = async (id: string) => {
-  return await api.get(`categories/${id}`).json<Category>();
+  return await api.get(`categories/${id}`).json<CategoryDto>();
 };
 
 const Category: Component = () => {
