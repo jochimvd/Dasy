@@ -1,9 +1,9 @@
 import { createResource, For } from "solid-js";
-import { fetchConsequences } from "../pages/settings/consequences/Consequences";
+import { fetchConsequences } from "../pages/configuration/consequences/Consequences";
 
 type SelectProps = {
-  value: string;
-  setConsequence: (url: string) => void;
+  value?: number;
+  setConsequence: (id: number) => void;
 };
 
 const SelectConsequence = (props: SelectProps) => {
@@ -11,17 +11,14 @@ const SelectConsequence = (props: SelectProps) => {
 
   return (
     <>
-      <label
-        for="consequence"
-        class="block mb-2 text-sm font-medium text-gray-900"
-      >
+      <label for="consequence" class="block text-sm font-medium text-gray-700">
         Consequence
       </label>
       <select
         id="consequence"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
         onInput={(e) => {
-          props.setConsequence(e.currentTarget.value);
+          props.setConsequence(Number(e.currentTarget.value));
         }}
         required
       >
@@ -29,8 +26,8 @@ const SelectConsequence = (props: SelectProps) => {
         <For each={consequences()}>
           {(consequence) => (
             <option
-              value={consequence._links?.self.href}
-              selected={props.value === consequence._links?.self.href}
+              value={consequence.id}
+              selected={props.value === consequence.id}
             >
               {consequence.name}
             </option>

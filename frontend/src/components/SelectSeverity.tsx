@@ -1,9 +1,9 @@
 import { createResource, For } from "solid-js";
-import { fetchSeverities } from "../pages/settings/severities/Severities";
+import { fetchSeverities } from "../pages/configuration/severities/Severities";
 
 type SelectProps = {
-  value: string;
-  setSeverity: (url: string) => void;
+  value?: number;
+  setSeverity: (id: number) => void;
 };
 
 const SelectSeverity = (props: SelectProps) => {
@@ -11,27 +11,21 @@ const SelectSeverity = (props: SelectProps) => {
 
   return (
     <>
-      <label
-        for="severity"
-        class="block mb-2 text-sm font-medium text-gray-900"
-      >
+      <label for="severity" class="block text-sm font-medium text-gray-700">
         Severity
       </label>
       <select
         id="severity"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
         onInput={(e) => {
-          props.setSeverity(e.currentTarget.value);
+          props.setSeverity(Number(e.currentTarget.value));
         }}
         required
       >
         <option value="">Select a severity</option>
         <For each={severities()}>
           {(severity) => (
-            <option
-              value={severity._links?.self.href}
-              selected={props.value === severity._links?.self.href}
-            >
+            <option value={severity.id} selected={props.value === severity.id}>
               {severity.name}
             </option>
           )}
