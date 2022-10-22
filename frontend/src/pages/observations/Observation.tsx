@@ -1,35 +1,11 @@
-import { useParams } from "solid-app-router";
-import { Component, createResource, Suspense } from "solid-js";
-import { api, Links } from "../../utils";
-import { Category } from "../settings/categories/Category";
+import { Link, useParams } from "solid-app-router";
+import { Component, createResource, Show, Suspense } from "solid-js";
+import { ObservationDto } from "../../models/Observation";
+import { prettyFormatStatus, Status } from "../../models/Status";
+import { api } from "../../utils/utils";
 
-export type Status = "NEW" | "IN_PROGRESS" | "DONE";
-
-export type Observation = {
-  id?: number;
-  key: string;
-  observer: string;
-  observerCompany: string;
-  observedAt: string;
-  location: Location;
-  observedCompany: string;
-  immediateDanger: boolean;
-  type: string;
-  category: Category;
-  description: string;
-  actionsTaken: string;
-  furtherActions: string;
-  status: Status;
-  _links: Links;
-};
-
-type Location = {
-  id?: number;
-  name: string;
-};
-
-const fetchObservation = async (id: string) => {
-  return await api.get(`observations/${id}`).json<Observation>();
+export const fetchObservation = async (id: string) => {
+  return await api.get(`observations/${id}`).json<ObservationDto>();
 };
 
 const Observation: Component = () => {
@@ -38,59 +14,123 @@ const Observation: Component = () => {
 
   return (
     <>
-      <h1 class="text-xl mb-5">Observation</h1>
-
-      <Suspense fallback={<div>Loading...</div>}>
-        <table>
-          <tbody>
-            <tr>
-              <td>Key</td> <td>{observation()?.key}</td>
-            </tr>
-            <tr>
-              <td>Observer</td> <td>{observation()?.observer}</td>
-            </tr>
-            <tr>
-              <td>Observer Company</td>{" "}
-              <td>{observation()?.observerCompany}</td>
-            </tr>
-            <tr>
-              <td>Observed At</td>{" "}
-              <td>
-                {new Date(observation()?.observedAt ?? "").toLocaleString()}
-              </td>
-            </tr>
-            <tr>
-              <td>Location</td> <td>{observation()?.location.name}</td>
-            </tr>
-            <tr>
-              <td>Observed Company</td>{" "}
-              <td>{observation()?.observedCompany}</td>
-            </tr>
-            <tr>
-              <td>Immediate Danger</td>{" "}
-              <td>{observation()?.immediateDanger ? "Yes" : "No"}</td>
-            </tr>
-            <tr>
-              <td>Type</td> <td>{observation()?.type}</td>
-            </tr>
-            <tr>
-              <td>Category</td> <td>{observation()?.category.name}</td>
-            </tr>
-            <tr>
-              <td>Description</td> <td>{observation()?.description}</td>
-            </tr>
-            <tr>
-              <td>Actions Taken</td> <td>{observation()?.actionsTaken}</td>
-            </tr>
-            <tr>
-              <td>Further Actions</td> <td>{observation()?.furtherActions}</td>
-            </tr>
-            <tr>
-              <td>Status</td> <td>{observation()?.status}</td>
-            </tr>
-          </tbody>
-        </table>
-      </Suspense>
+      <div class="">
+        <Suspense fallback={<div>Loading...</div>}>
+          <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+              <div class="-ml-4 flex items-center justify-start flex-wrap sm:flex-nowrap">
+                <div class="ml-4">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    {observation()?.key}
+                  </h3>
+                </div>
+                <div class="ml-4 mr-auto">
+                  {prettyFormatStatus(observation()?.status, "large")}
+                </div>
+                <div class="ml-4">
+                  <Show when={observation()?._links?.put}>
+                    <Link
+                      href="edit"
+                      class="inline-flex items-center px-2.5 py-1.5 border border-orange-600 shadow-sm text-xs font-medium rounded text-orange-600 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                    >
+                      Edit
+                    </Link>
+                  </Show>
+                </div>
+              </div>
+            </div>
+            <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+              <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                <div class="sm:col-span-1">
+                  <dt class="text-sm font-medium text-gray-500">Observer</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    {observation()?.observer.firstName}{" "}
+                    {observation()?.observer.lastName}
+                  </dd>
+                </div>
+                <div class="sm:col-span-1">
+                  <dt class="text-sm font-medium text-gray-500">
+                    Observer Company
+                  </dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    {observation()?.observerCompany}
+                  </dd>
+                </div>
+                <div class="sm:col-span-1">
+                  <dt class="text-sm font-medium text-gray-500">Observed At</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    {new Date(observation()?.observedAt ?? "").toLocaleString()}
+                  </dd>
+                </div>
+                <div class="sm:col-span-1">
+                  <dt class="text-sm font-medium text-gray-500">
+                    Observed Company
+                  </dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    {observation()?.observedCompany}
+                  </dd>
+                </div>
+                <div class="sm:col-span-1">
+                  <dt class="text-sm font-medium text-gray-500">Category</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    {observation()?.category.name}
+                  </dd>
+                </div>
+                <div class="sm:col-span-1">
+                  <dt class="text-sm font-medium text-gray-500">Location</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    {observation()?.location.name}
+                  </dd>
+                </div>
+                <div class="sm:col-span-1">
+                  <dt class="text-sm font-medium text-gray-500">
+                    Immediate Danger
+                  </dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    {observation()?.immediateDanger ? "Yes" : "No"}
+                  </dd>
+                </div>
+                <div class="sm:col-span-1">
+                  <dt class="text-sm font-medium text-gray-500">Type</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    {observation()?.type}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+            <div class="px-4 py-5 sm:px-6">
+              <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                  <dt class="text-sm font-medium text-gray-500">Description</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    {observation()?.description}
+                  </dd>
+                </div>
+                <Show when={observation()?.actionsTaken}>
+                  <div class="sm:col-span-2">
+                    <dt class="text-sm font-medium text-gray-500">
+                      Actions Taken
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900">
+                      {observation()?.actionsTaken}
+                    </dd>
+                  </div>
+                </Show>
+                <Show when={observation()?.furtherActions}>
+                  <div class="sm:col-span-2">
+                    <dt class="text-sm font-medium text-gray-500">
+                      Further Actions
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900">
+                      {observation()?.furtherActions}
+                    </dd>
+                  </div>
+                </Show>
+              </dl>
+            </div>
+          </div>
+        </Suspense>
+      </div>
     </>
   );
 };
