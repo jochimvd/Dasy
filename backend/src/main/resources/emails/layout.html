@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Safety App</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<p th:text="${'Dear ' + name}"></p>
+<div layout:fragment="~{text-content-en}"></div>
+<p th:if="${url != null}">
+    To proceed, follow this link: <a th:href="${url}" th:text="${url}"></a>
+</p>
+<p>
+    Regards,<br>
+    Safety App
+</p>
+</body>
+</html>

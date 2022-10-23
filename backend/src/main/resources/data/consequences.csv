@@ -1,0 +1,8 @@
+name,probability,description
+To be expected,10,
+Very possible,6,
+Unusual but possible,3,
+Distantly possible,1,
+Plausible but unlikely,0.5,
+Practically impossible,0.2,
+Virtually impossible,0.1,

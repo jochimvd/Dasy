@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<body>
+<div layout:fragment="~{text-content-en}">
+    You are receiving this email because you have requested to change your email address to <span
+        th:text="${email}"></span>.
+    <br/>
+    To complete the change, you have to follow the link in this email.
+</div>
+</body>
+</html>
