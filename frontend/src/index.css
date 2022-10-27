@@ -6,8 +6,3 @@ html {
   @apply bg-gray-100;
   @apply overflow-y-scroll;
 }
-
-nav li .active,
-aside li .active {
-  @apply bg-gray-100;
-}
