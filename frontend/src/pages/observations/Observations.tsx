@@ -48,12 +48,22 @@ export const fetchObservations = async (query?: string) => {
 };
 
 const Observations: Component = () => {
+  let previousPage: string | undefined;
   const [queryString, setQueryString] = createSignal("");
   const [searchParams, setSearchParams] =
     useSearchParams<ObservationSearchParams>();
   const [response] = createResource(queryString, fetchObservations);
 
   createEffect(() => {
+    // if the query params changed but the page did not,
+    // we updated a filter and have to reset the page
+    if (searchParams.page && previousPage === searchParams.page) {
+      setSearchParams({ page: undefined });
+      return;
+    }
+
+    previousPage = searchParams.page;
+
     let query = "?";
     for (const [key, value] of Object.entries(searchParams)) {
       query += `${key}=${value}&`;
