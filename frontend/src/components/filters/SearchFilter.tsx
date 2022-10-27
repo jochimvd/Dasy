@@ -21,7 +21,7 @@ const SearchFilter = () => {
   const [searchParams, setSearchParams] =
     useSearchParams<ObservationSearchParams>();
 
-  const [filter, setFilter] = createSignal({ label: "All", key: "search" });
+  const [column, setColumn] = createSignal({ label: "All", key: "search" });
   const [value, setValue] = createSignal(searchParams.search || "");
   const [flyout, setFlyout] = createSignal(false);
 
@@ -46,9 +46,11 @@ const SearchFilter = () => {
   };
 
   createEffect(
-    on(filter, (f) => {
-      const newParams = { ...emptyParams, [f.key]: value() };
-      setSearchParams(newParams);
+    on(column, (f) => {
+      if (value()) {
+        const newParams = { ...emptyParams, [f.key]: value() };
+        setSearchParams(newParams);
+      }
     })
   );
 
@@ -85,7 +87,7 @@ const SearchFilter = () => {
 
                 // Wait for waitTime ms and then send the result
                 timer = setTimeout(() => {
-                  setSearchParams({ [filter().key]: value() });
+                  setSearchParams({ [column().key]: value(), page: "" });
                 }, waitTime);
               }}
             />
@@ -128,7 +130,7 @@ const SearchFilter = () => {
                 clip-rule="evenodd"
               />
             </svg>
-            <div class="truncate sm:max-w-[5rem]">{filter().label}</div>
+            <div class="truncate sm:max-w-[5rem]">{column().label}</div>
           </button>
         </div>
         <Show when={flyout()}>
@@ -153,9 +155,9 @@ const SearchFilter = () => {
                         name="notification-method"
                         type="radio"
                         class="hover:cursor-pointer focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300"
-                        checked={filter().key === searchFilter.key}
+                        checked={column().key === searchFilter.key}
                         onClick={() => {
-                          setFilter(searchFilter);
+                          setColumn(searchFilter);
                           setFlyout(false);
                         }}
                       />
