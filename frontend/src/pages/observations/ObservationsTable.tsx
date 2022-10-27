@@ -127,6 +127,7 @@ export const [observationTableColumns, setObservationTableColumns] =
   });
 
 type ObservationTableProps = {
+  loading: boolean;
   observations: ObservationDto[];
 };
 
@@ -248,27 +249,21 @@ const ObservationsTable: Component<ObservationTableProps> = (props) => {
                       />
                     </svg>
 
-                    {props.observations.length === 0
-                      ? () => {
-                          return (
-                            <>
-                              <h3 class="mt-2 text-sm font-medium text-gray-900">
-                                No observations found
-                              </h3>
-                              <p class="mt-1 text-sm text-gray-500">
-                                Try adjusting your search or filter to find what
-                                you're looking for.
-                              </p>
-                            </>
-                          );
-                        }
-                      : () => {
-                          return (
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">
-                              Loading...
-                            </h3>
-                          );
-                        }}
+                    {props.loading ? (
+                      <h3 class="mt-2 text-sm font-medium text-gray-900">
+                        Loading...
+                      </h3>
+                    ) : (
+                      <>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">
+                          No observations found
+                        </h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                          Try adjusting your search or filter to find what
+                          you're looking for.
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
               </td>

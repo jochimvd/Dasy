@@ -89,6 +89,7 @@ const Observations: Component = () => {
           <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
             <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
               <ObservationsTable
+                loading={response.loading}
                 observations={response()?._embedded?.observations ?? []}
               />
               <Show when={response()?.page?.totalElements}>
