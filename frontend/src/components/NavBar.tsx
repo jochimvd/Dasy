@@ -1,6 +1,10 @@
-import { Link, NavLink } from "solid-app-router";
-import { createSignal, For, Show } from "solid-js";
+import { A, useIsRouting } from "@solidjs/router";
+import { createEffect, createSignal, For, Show } from "solid-js";
+import { useService } from "solid-services";
+import { UserDto } from "../models/User";
+import AuthService from "../services/AuthService";
 import { clickOutside } from "../utils/Directives";
+import { isLoading } from "./Loader";
 
 const navigation = [
   { name: "Home", href: "/", end: true },
@@ -11,17 +15,40 @@ const navigation = [
 
 const userNavigation = [
   { name: "Your Profile", href: "/users/me" },
-  { name: "Settings", href: "/profile" },
-  { name: "Sign out", href: "/sign-out" },
+  { name: "Settings", href: "/settings" },
 ];
 
-const [mobileNavMenu, setMobileNavMenu] = createSignal(false);
-const [userMenu, setUserMenu] = createSignal(false);
+const formatUserInitials = (user?: UserDto) => {
+  if (!user) return "UU";
+  return (
+    user.firstName.charAt(0).toUpperCase() +
+    user.lastName.charAt(0).toUpperCase()
+  );
+};
+
+const formatUserFullName = (user?: UserDto) => {
+  if (!user) return "Unknown User";
+  return `${user.firstName} ${user.lastName}`;
+};
 
 const NavBar = () => {
+  const routing = useIsRouting();
+
+  const auth = useService(AuthService);
+  const loggedInUser = () => auth().state.user;
+
+  const [mobileNavMenu, setMobileNavMenu] = createSignal(false);
+  const [userMenu, setUserMenu] = createSignal(false);
+
   let userAvatarButton;
-  let mobileNavMenuButton;
+  let mobileNavMenuButton: HTMLButtonElement | undefined;
   false && clickOutside;
+
+  createEffect(() => {
+    if (!routing()) {
+      setMobileNavMenu(false);
+    }
+  });
 
   return (
     <>
@@ -96,18 +123,18 @@ const NavBar = () => {
                   </button>
                 </div>
                 <div class="flex-shrink-0 flex items-center">
-                  <Link
+                  <A
                     class="inline-flex items-center justify-center w-8 h-8"
                     href="/"
                   >
                     <img src="/images/logo.png" alt="Safety Logo" />
-                  </Link>
+                  </A>
                 </div>
                 <div class="hidden md:ml-6 md:flex md:space-x-8">
                   {/* Current: "border-orange-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
                   <For each={navigation}>
                     {(item) => (
-                      <NavLink
+                      <A
                         href={item.href}
                         class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                         activeClass="border-orange-500 text-gray-900"
@@ -115,14 +142,14 @@ const NavBar = () => {
                         end={item.end}
                       >
                         {item.name}
-                      </NavLink>
+                      </A>
                     )}
                   </For>
                 </div>
               </div>
               <div class="flex items-center">
                 <div class="flex-shrink-0">
-                  <Link
+                  <A
                     href="/observations/create"
                     class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                   >
@@ -141,7 +168,7 @@ const NavBar = () => {
                       />
                     </svg>
                     New Observation
-                  </Link>
+                  </A>
                 </div>
                 <div class="hidden md:ml-4 md:flex-shrink-0 md:flex md:items-center">
                   <button
@@ -180,7 +207,7 @@ const NavBar = () => {
                       >
                         <span class="sr-only">Open user menu</span>
                         <div class="w-8 h-8 rounded-full flex justify-center items-center bg-orange-100 text-orange-900 font-medium">
-                          <p>JD</p>
+                          <span>{formatUserInitials(loggedInUser())}</span>
                         </div>
                       </button>
                     </div>
@@ -207,10 +234,9 @@ const NavBar = () => {
                           userAvatarButton,
                         ]}
                       >
-                        {/* Active: "bg-gray-100", Not Active: "" */}
                         <For each={userNavigation}>
                           {(item) => (
-                            <NavLink
+                            <A
                               href={item.href}
                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                               activeClass="bg-gray-100"
@@ -219,9 +245,17 @@ const NavBar = () => {
                               onClick={() => setUserMenu(false)}
                             >
                               {item.name}
-                            </NavLink>
+                            </A>
                           )}
                         </For>
+                        <button
+                          class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                          tabindex="-1"
+                          onClick={auth().logout}
+                        >
+                          Sign Out
+                        </button>
                       </div>
                     </Show>
                   </div>
@@ -235,25 +269,25 @@ const NavBar = () => {
             <div
               class="md:hidden"
               id="mobile-menu"
-              use:clickOutside={[
-                () => setMobileNavMenu(false),
-                mobileNavMenuButton,
-              ]}
+              // use:clickOutside={[
+              //   () => setMobileNavMenu(false),
+              //   mobileNavMenuButton,
+              // ]}
             >
               <div class="pt-2 pb-3 space-y-1">
                 {/* Current: "bg-orange-50 border-orange-500 text-orange-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" */}
                 <For each={navigation}>
                   {(item) => (
-                    <NavLink
+                    <A
                       href={item.href}
                       class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium sm:pl-5 sm:pr-6"
                       activeClass="bg-orange-50 border-orange-500 text-orange-700"
                       inactiveClass="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
                       end={item.end}
-                      onClick={() => setMobileNavMenu(false)}
+                      // onClick={() => setMobileNavMenu(false)}
                     >
                       {item.name}
-                    </NavLink>
+                    </A>
                   )}
                 </For>
               </div>
@@ -261,21 +295,22 @@ const NavBar = () => {
                 <div class="flex items-center px-4 sm:px-6">
                   <div class="flex-shrink-0">
                     <div class="w-10 h-10 rounded-full flex justify-center items-center bg-orange-100 text-orange-900 font-medium">
-                      <p>JD</p>
+                      <span>{formatUserInitials(loggedInUser())}</span>
                     </div>
                   </div>
                   <div class="ml-3">
                     <div class="text-base font-medium text-gray-800">
-                      John Doe
+                      {formatUserFullName(loggedInUser())}
                     </div>
-                    {/* <div class="text-sm font-medium text-gray-500">
-                      john.doe@safety.com
-                    </div> */}
+                    {loggedInUser()?.email && (
+                      <div class="text-sm font-medium text-gray-500">
+                        {loggedInUser()?.email}
+                      </div>
+                    )}
                   </div>
                   <button
                     type="button"
                     class="ml-auto flex-shrink-0 bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                    onClick={() => setMobileNavMenu(false)}
                   >
                     <span class="sr-only">View notifications</span>
                     {/* Heroicon name: outline/bell */}
@@ -299,16 +334,21 @@ const NavBar = () => {
                 <div class="mt-3 space-y-1">
                   <For each={userNavigation}>
                     {(item) => (
-                      <NavLink
+                      <A
                         href={item.href}
                         class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 sm:px-6"
                         activeClass="bg-gray-100"
-                        onClick={() => setMobileNavMenu(false)}
                       >
                         {item.name}
-                      </NavLink>
+                      </A>
                     )}
                   </For>
+                  <button
+                    class="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 sm:px-6"
+                    onClick={auth().logout}
+                  >
+                    Sign Out
+                  </button>
                 </div>
               </div>
             </div>
