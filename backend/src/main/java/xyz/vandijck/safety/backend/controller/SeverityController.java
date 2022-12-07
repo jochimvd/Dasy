@@ -90,9 +90,9 @@ public class SeverityController implements UpdatableEntityController<SeverityDto
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<String> archiveOrDelete(@RequestBody @Valid DeleteRequest request, @PathVariable long id) {
+    public ResponseEntity<String> archiveOrDelete(@RequestBody(required = false) @Valid DeleteRequest request, @PathVariable long id) {
         severityPolicy.authorizeDelete(id);
-        severityService.archiveOrDeleteById(request, id);
+        severityService.archiveOrDeleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

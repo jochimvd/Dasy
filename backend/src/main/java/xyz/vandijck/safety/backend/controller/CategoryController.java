@@ -90,9 +90,9 @@ public class CategoryController implements UpdatableEntityController<CategoryDto
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<String> archiveOrDelete(@RequestBody @Valid DeleteRequest request, @PathVariable long id) {
+    public ResponseEntity<String> archiveOrDelete(@RequestBody(required = false) @Valid DeleteRequest request, @PathVariable long id) {
         categoryPolicy.authorizeDelete(id);
-        categoryService.archiveOrDeleteById(request, id);
+        categoryService.archiveOrDeleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

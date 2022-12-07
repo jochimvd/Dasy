@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import xyz.vandijck.safety.backend.assembler.ObservationAssembler;
 import xyz.vandijck.safety.backend.controller.exceptions.IdMismatchException;
 import xyz.vandijck.safety.backend.dto.ObservationDto;
+import xyz.vandijck.safety.backend.dto.UserDto;
 import xyz.vandijck.safety.backend.entity.Observation;
 import xyz.vandijck.safety.backend.policy.ObservationPolicy;
 import xyz.vandijck.safety.backend.request.DeleteRequest;
 import xyz.vandijck.safety.backend.request.ObservationSearchRequest;
 import xyz.vandijck.safety.backend.service.ObservationService;
 import xyz.vandijck.safety.backend.service.SearchDTO;
+import xyz.vandijck.safety.backend.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -31,6 +33,9 @@ public class ObservationController implements UpdatableEntityController<Observat
 
     @Autowired
     private ObservationService observationService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private ObservationAssembler observationAssembler;
@@ -77,6 +82,7 @@ public class ObservationController implements UpdatableEntityController<Observat
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<ObservationDto> create(@RequestBody @Valid ObservationDto observationDto) {
         observationPolicy.authorizePost(observationDto);
+        observationDto.setObserver(new UserDto().setId(userService.getCurrentUser().getId()));
         return observationAssembler.toModel(observationService.save(observationAssembler.convertToEntity(observationDto)));
     }
 
@@ -89,14 +95,14 @@ public class ObservationController implements UpdatableEntityController<Observat
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<String> archiveOrDelete(@RequestBody @Valid DeleteRequest request, @PathVariable long id) {
+    public ResponseEntity<String> archiveOrDelete(@RequestBody(required = false) @Valid DeleteRequest request, @PathVariable long id) {
         observationPolicy.authorizeDelete(id);
-        observationService.archiveOrDeleteById(request, id);
+        observationService.archiveOrDeleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
-     * Handles the put HTTP request for a observation
+     * Handles the put HTTP request for an observation
      *
      * @param observationDto The new information for the observation
      * @param id      The id of the observation you want to update
@@ -114,7 +120,7 @@ public class ObservationController implements UpdatableEntityController<Observat
     }
 
     /**
-     * Handles the patch request for a observation
+     * Handles the patch request for an observation
      *
      * @param patch The new information for the observation, fields are allowed to be left unspecified, these will then not be
      *              updated

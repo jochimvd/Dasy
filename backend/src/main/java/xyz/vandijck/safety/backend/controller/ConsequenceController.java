@@ -90,9 +90,9 @@ public class ConsequenceController implements UpdatableEntityController<Conseque
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<String> archiveOrDelete(@RequestBody @Valid DeleteRequest request, @PathVariable long id) {
+    public ResponseEntity<String> archiveOrDelete(@RequestBody(required = false) @Valid DeleteRequest request, @PathVariable long id) {
         consequencePolicy.authorizeDelete(id);
-        consequenceService.archiveOrDeleteById(request, id);
+        consequenceService.archiveOrDeleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

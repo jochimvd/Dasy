@@ -122,6 +122,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return body;
     }
 
+    private Map<String, Object> createBody(HttpStatus status, Exception ex) {
+        Map<String, Object> body = createBody(status);
+        body.put("message", ex.getMessage());
+        return body;
+    }
+
     /**
      * Common validation exception handler.
      *
@@ -165,7 +171,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     protected ResponseEntity<Object> handleUnauthorizedException(UnauthorizedException ex, WebRequest request) {
-        return handleExceptionInternal(ex, createBody(HttpStatus.UNAUTHORIZED), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+        return handleExceptionInternal(ex, createBody(HttpStatus.UNAUTHORIZED, ex), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
     @ExceptionHandler(UnsupportedOperationException.class)

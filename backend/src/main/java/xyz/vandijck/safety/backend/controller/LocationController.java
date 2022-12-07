@@ -90,9 +90,9 @@ public class LocationController implements UpdatableEntityController<LocationDto
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<String> archiveOrDelete(@RequestBody @Valid DeleteRequest request, @PathVariable long id) {
+    public ResponseEntity<String> archiveOrDelete(@RequestBody(required = false) @Valid DeleteRequest request, @PathVariable long id) {
         locationPolicy.authorizeDelete(id);
-        locationService.archiveOrDeleteById(request, id);
+        locationService.archiveOrDeleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
