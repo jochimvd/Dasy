@@ -25,11 +25,11 @@ export type ObservationDto = {
 export type ObservationInput = {
   id?: number;
   observedAt?: string;
-  location: LocationInput;
-  category: CategoryInput;
-  observedCompany: string;
-  immediateDanger: boolean;
-  description: string;
-  actionsTaken: string;
-  furtherActions: string;
+  location?: LocationInput;
+  category?: CategoryInput;
+  observedCompany?: string;
+  immediateDanger?: boolean;
+  description?: string;
+  actionsTaken?: string;
+  furtherActions?: string;
 };
