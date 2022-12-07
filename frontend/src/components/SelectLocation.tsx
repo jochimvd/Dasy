@@ -1,5 +1,5 @@
-import { createResource, For } from "solid-js";
-import { fetchLocations } from "../pages/configuration/locations/Locations";
+import { For } from "solid-js";
+import LocationService from "../services/LocationService";
 
 type SelectProps = {
   value?: number;
@@ -7,7 +7,8 @@ type SelectProps = {
 };
 
 const SelectLocation = (props: SelectProps) => {
-  const [locations] = createResource(fetchLocations);
+  const [data] = LocationService().locationsData();
+  const locations = () => data()?._embedded?.locations;
 
   return (
     <>

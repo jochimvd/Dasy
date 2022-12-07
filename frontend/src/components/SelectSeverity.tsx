@@ -1,5 +1,5 @@
-import { createResource, For } from "solid-js";
-import { fetchSeverities } from "../pages/configuration/severities/Severities";
+import { For } from "solid-js";
+import SeverityService from "../services/SeverityService";
 
 type SelectProps = {
   value?: number;
@@ -7,7 +7,8 @@ type SelectProps = {
 };
 
 const SelectSeverity = (props: SelectProps) => {
-  const [severities] = createResource(fetchSeverities);
+  const [data] = SeverityService().severitiesData();
+  const severities = () => data()?._embedded?.severities;
 
   return (
     <>

@@ -1,5 +1,5 @@
-import { createResource, For } from "solid-js";
-import { fetchCategories } from "../pages/configuration/categories/Categories";
+import { For } from "solid-js";
+import CategoryService from "../services/CategoryService";
 
 type SelectProps = {
   value?: number;
@@ -7,7 +7,8 @@ type SelectProps = {
 };
 
 const SelectCategory = (props: SelectProps) => {
-  const [categories] = createResource(fetchCategories);
+  const [data] = CategoryService().categoriesData();
+  const categories = () => data()?._embedded?.categories;
 
   return (
     <>

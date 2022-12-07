@@ -1,5 +1,5 @@
-import { createResource, For } from "solid-js";
-import { fetchConsequences } from "../pages/configuration/consequences/Consequences";
+import { For } from "solid-js";
+import ConsequenceService from "../services/ConsequenceService";
 
 type SelectProps = {
   value?: number;
@@ -7,7 +7,8 @@ type SelectProps = {
 };
 
 const SelectConsequence = (props: SelectProps) => {
-  const [consequences] = createResource(fetchConsequences);
+  const [data] = ConsequenceService().consequencesData();
+  const consequences = () => data()?._embedded?.consequences;
 
   return (
     <>
