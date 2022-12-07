@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
  * Request that contains information the user has entered to confirm the deletion of an entity
  */
 @Data
-@Accessors( chain = true)
+@Accessors(chain = true)
 @NoArgsConstructor
 public class DeleteRequest {
 

@@ -458,10 +458,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getCurrentUser() {
         try {
-            // returns the currently signed in user for the request
+            // returns the currently signed-in user for the request
             return (User) (SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         } catch (Exception e) {
-            // there is no signed in user
+            // there is no signed-in user
             return ANONYMOUS;
         }
     }
