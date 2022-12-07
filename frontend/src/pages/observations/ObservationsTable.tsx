@@ -1,15 +1,16 @@
-import { Link, useSearchParams } from "solid-app-router";
+import { A, useSearchParams } from "@solidjs/router";
 import { Component, For, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { ObservationDto } from "../../models/Observation";
 import { prettyFormatStatus } from "../../models/Status";
+import { formatDate } from "../../utils/utils";
 import { ObservationSearchParams } from "./Observations";
 
 export type Column = {
   key: string;
   label: string;
   sortable: boolean;
-  formatFn: (observation: ObservationDto) => JSX.Element;
+  formatFn: (observation: ObservationDto) => JSXElement;
 };
 
 const formatKey = (key: string) => {
@@ -21,21 +22,29 @@ const keyColFormat = (observation: ObservationDto) => {
   return (
     <td class="px-2 md:px-6 py-4 text-sm font-medium text-gray-900">
       <span class="lg:whitespace-nowrap">
-        <Link href={observation.id.toString()}>
+        <A href={observation.id.toString()}>
           {formatKey(observation.key)[0]}
           <span class="whitespace-nowrap">{formatKey(observation.key)[1]}</span>
-        </Link>
+        </A>
       </span>
     </td>
   );
 };
 
-const textColFormat = (child: string) => {
-  return colFormat(<span class="line-clamp-2">{child}</span>);
+const textColFormat = (child: string, title?: string) => {
+  return colFormat(
+    <span class="line-clamp-2" title={title}>
+      {child}
+    </span>
+  );
 };
 
-const colFormat = (child: JSXElement) => {
-  return <td class="px-2 md:px-6 py-4 text-sm text-gray-500">{child}</td>;
+const colFormat = (child: JSXElement, extraClass?: string) => {
+  return (
+    <td class={`px-2 md:px-6 py-4 text-sm text-gray-500 ${extraClass}`}>
+      {child}
+    </td>
+  );
 };
 
 export const keyCol: Column = {
@@ -57,7 +66,11 @@ export const observedAtCol: Column = {
   key: "observedAt",
   label: "Observed At",
   sortable: true,
-  formatFn: (o) => textColFormat(new Date(o.observedAt).toLocaleString()),
+  formatFn: (o) =>
+    textColFormat(
+      new Date(o.observedAt).toLocaleDateString(),
+      formatDate(new Date(o.observedAt))
+    ),
 };
 
 export const observedCompanyCol: Column = {
@@ -107,7 +120,8 @@ export const immediateDangerCol: Column = {
         </span>
       ) : (
         ""
-      )
+      ),
+      "text-center"
     ),
 };
 
@@ -277,13 +291,13 @@ const ObservationsTable: Component<ObservationTableProps> = (props) => {
                   {(columnEntry) => columnEntry.col.formatFn(observation)}
                 </For>
                 <Show when={observation._links?.put}>
-                  <td class="px-2 md:px-6 py-4 text-right text-sm font-medium">
-                    <Link
+                  <td class="px-2 md:px-6 py-4 text-sm font-medium">
+                    <A
                       href={observation.id + "/edit"}
                       class="text-orange-600 hover:text-orange-900"
                     >
                       Edit
-                    </Link>
+                    </A>
                   </td>
                 </Show>
               </tr>

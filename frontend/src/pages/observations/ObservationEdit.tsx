@@ -1,11 +1,12 @@
-import { useNavigate, useParams } from "solid-app-router";
-import { createEffect, createResource, createSignal } from "solid-js";
+import { useNavigate, useRouteData } from "@solidjs/router";
+import { Component, createComputed, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
-import { api, getUri } from "../../utils/utils";
 import SelectCategory from "../../components/SelectCategory";
-import { fetchObservation } from "./Observation";
 import SelectLocation from "../../components/SelectLocation";
 import { ObservationInput } from "../../models/Observation";
+import ObservationService, {
+  ObservationData,
+} from "../../services/ObservationService";
 
 function toLocalIsoString(date: Date) {
   const tzo = -date.getTimezoneOffset();
@@ -33,49 +34,47 @@ function toLocalIsoString(date: Date) {
   );
 }
 
-export const ObservationEdit = (props: { new?: boolean }) => {
-  const putObservation = async () => {
-    return props.new
-      ? await api.post("observations", { json: observation })
-      : await api.put(new URL(data()!._links!.self.href), {
-          json: observation,
-        });
-  };
-
-  const params = useParams();
+export const ObservationEdit: Component = () => {
   const navigate = useNavigate();
 
-  const [data] = createResource(() => params.id, fetchObservation);
-
-  const [observation, setObservation] = createStore({} as ObservationInput);
-
+  const observationService = ObservationService();
+  const [data, { mutate }] = useRouteData<ObservationData>();
   const [saving, setSaving] = createSignal(false);
 
-  createEffect(() => {
-    setObservation({
-      observedAt: data()?.observedAt ?? toLocalIsoString(new Date()),
-      location: { id: data()?.location.id },
-      category: { id: data()?.category.id },
-      observedCompany: data()?.observedCompany ?? "",
-      immediateDanger: data()?.immediateDanger ?? false,
-      description: data()?.description ?? "",
-      actionsTaken: data()?.actionsTaken ?? "",
-      furtherActions: data()?.furtherActions ?? "",
-    });
-  });
+  const [state, setState] = createStore<ObservationInput>({});
+  const updateState = (field: keyof ObservationInput) => (e: Event) =>
+    setState(field, (e.target as HTMLInputElement).value);
 
-  const submitObservation = (e: Event) => {
+  const submitForm = async (e: Event) => {
     e.preventDefault();
     setSaving(true);
 
-    putObservation().then((res) => {
-      if (res.ok) {
-        navigate(getUri(res.headers.get("Location") ?? ""), {
-          replace: true,
-        });
-      }
-    });
+    try {
+      const observation = await (data()?.id
+        ? observationService.updateObservation
+        : observationService.createObservation)(state);
+
+      mutate(observation);
+      navigate("/observations/" + observation.id);
+    } catch (e) {
+      setSaving(false);
+    }
   };
+
+  createComputed(() => {
+    const observation = data();
+    if (observation && observation.id) {
+      const { _links, ...rest } = observation;
+      setState(rest);
+    }
+  });
+
+  // Initialize autofilled observedAt field
+  createComputed(() => {
+    if (!state.observedAt) {
+      setState("observedAt", toLocalIsoString(new Date()));
+    }
+  });
 
   return (
     <>
@@ -107,15 +106,19 @@ export const ObservationEdit = (props: { new?: boolean }) => {
                   id="observed-at"
                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
                   max={toLocalIsoString(new Date()).slice(0, 16)}
-                  value={toLocalIsoString(
-                    new Date(observation.observedAt!)
-                  ).slice(0, 16)}
+                  value={toLocalIsoString(new Date(state.observedAt!)).slice(
+                    0,
+                    16
+                  )}
                   onInput={(e) => {
-                    setObservation({
-                      observedAt: toLocalIsoString(
-                        new Date(e.currentTarget.value)
-                      ),
-                    });
+                    setState(
+                      "observedAt",
+                      toLocalIsoString(
+                        e.currentTarget.value
+                          ? new Date(e.currentTarget.value)
+                          : new Date()
+                      )
+                    );
                   }}
                 />
               </div>
@@ -132,28 +135,22 @@ export const ObservationEdit = (props: { new?: boolean }) => {
                   id="observed-company"
                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
                   placeholder="Observed company"
-                  value={observation.observedCompany}
-                  onInput={(e) => {
-                    setObservation({ observedCompany: e.currentTarget.value });
-                  }}
+                  value={state.observedCompany ?? ""}
+                  onInput={updateState("observedCompany")}
                 />
               </div>
 
               <div class="col-span-4 sm:col-span-2">
                 <SelectLocation
-                  value={observation.location.id}
-                  setLocation={(id) => {
-                    setObservation({ location: { id: id } });
-                  }}
+                  value={state.location?.id}
+                  setLocation={(id) => setState("location", { id: id })}
                 />
               </div>
 
               <div class="col-span-4 sm:col-span-2">
                 <SelectCategory
-                  value={observation.category.id}
-                  setCategory={(id) => {
-                    setObservation({ category: { id: id } });
-                  }}
+                  value={state.category?.id}
+                  setCategory={(id) => setState("category", { id: id })}
                 />
               </div>
 
@@ -166,24 +163,22 @@ export const ObservationEdit = (props: { new?: boolean }) => {
                     type="button"
                     id="immediate-danger"
                     classList={{
-                      "bg-orange-500": observation.immediateDanger,
-                      "bg-gray-200": !observation.immediateDanger,
+                      "bg-orange-500": state.immediateDanger,
+                      "bg-gray-200": !state.immediateDanger,
                     }}
                     class="mt-1 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors ease-in-out duration-200"
                     role="switch"
-                    aria-checked={observation.immediateDanger}
+                    aria-checked={state.immediateDanger}
                     aria-labelledby="immediate-danger"
-                    onClick={() => {
-                      setObservation({
-                        immediateDanger: !observation.immediateDanger,
-                      });
-                    }}
+                    onClick={() =>
+                      setState("immediateDanger", !state.immediateDanger)
+                    }
                   >
                     <span
                       aria-hidden="true"
                       classList={{
-                        "translate-x-5": observation.immediateDanger,
-                        "translate-x-0": !observation.immediateDanger,
+                        "translate-x-5": state.immediateDanger,
+                        "translate-x-0": !state.immediateDanger,
                       }}
                       class="inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
                     ></span>
@@ -204,10 +199,8 @@ export const ObservationEdit = (props: { new?: boolean }) => {
                   id="description"
                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
                   placeholder="Describe the observation"
-                  value={observation.description}
-                  onInput={(e) => {
-                    setObservation({ description: e.currentTarget.value });
-                  }}
+                  value={state.description ?? ""}
+                  onInput={updateState("description")}
                 />
               </div>
 
@@ -223,10 +216,8 @@ export const ObservationEdit = (props: { new?: boolean }) => {
                   id="actions-taken"
                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
                   placeholder="Describe what actions were taken"
-                  value={observation.actionsTaken}
-                  onInput={(e) => {
-                    setObservation({ actionsTaken: e.currentTarget.value });
-                  }}
+                  value={state.actionsTaken ?? ""}
+                  onInput={updateState("actionsTaken")}
                 />
               </div>
 
@@ -242,10 +233,8 @@ export const ObservationEdit = (props: { new?: boolean }) => {
                   id="further-actions"
                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
                   placeholder="Describe any further actions to be taken"
-                  value={observation.furtherActions}
-                  onInput={(e) => {
-                    setObservation({ furtherActions: e.currentTarget.value });
-                  }}
+                  value={state.furtherActions ?? ""}
+                  onInput={updateState("furtherActions")}
                 />
               </div>
             </div>
@@ -254,7 +243,7 @@ export const ObservationEdit = (props: { new?: boolean }) => {
             <button
               type="submit"
               class="bg-gray-800 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
-              onClick={submitObservation}
+              onClick={submitForm}
             >
               {saving() ? "Saving..." : "Save"}
             </button>
