@@ -12,7 +12,7 @@ import {
   CollisionDetector,
   DragEventHandler,
 } from "@thisbeyond/solid-dnd";
-import { Link } from "solid-app-router";
+import { Link } from "@solidjs/router";
 import {
   batch,
   createEffect,
@@ -22,10 +22,9 @@ import {
   Show,
 } from "solid-js";
 import { createStore } from "solid-js/store";
-import { fetchObservations } from "../observations/Observations";
-import { api } from "../../utils/utils";
 import { Status, formatStatus } from "../../models/Status";
 import { ObservationDto } from "../../models/Observation";
+import ObservationService from "../../services/ObservationService";
 
 const Sortable = (props: { item: ObservationDto }) => {
   const observation = props.item;
@@ -36,7 +35,7 @@ const Sortable = (props: { item: ObservationDto }) => {
         <div class="">
           <div class="flex items-center space-x-3">
             <Link href={`/observations/${observation.id}`}>
-              <h3 class="text-gray-900 text-sm font-medium">
+              <h3 class="text-gray-900 text-sm font-medium hover:underline">
                 {observation.key}
               </h3>
             </Link>
@@ -120,13 +119,12 @@ const ColumnOverlay = (props: { id: Id; items: ObservationDto[] }) => {
 };
 
 const Board = () => {
-  const [observations] = createResource("", fetchObservations);
-
-  const patchObservation = async (observation: ObservationDto) => {
-    return await api.patch(new URL(observation._links!.self.href), {
-      json: [{ op: "replace", path: "/status", value: observation.status }],
-    });
-  };
+  const observationService = ObservationService();
+  const [data] = createResource(
+    "size=500&orderBy=observedAt&orderDir=DESC",
+    observationService.all
+  );
+  const observations = () => data()?._embedded?.observations;
 
   const [activeItem, setActiveItem] = createSignal<Id | ObservationDto | null>(
     null
@@ -255,7 +253,7 @@ const Board = () => {
         });
 
         if (dropped) {
-          patchObservation(dragged!);
+          observationService.patchObservation(dragged!);
         }
       }
     }
@@ -265,9 +263,7 @@ const Board = () => {
     if (isContainer(draggable.id)) {
       setActiveItem(draggable.id);
     } else {
-      const observation = observations()?._embedded.observations?.find(
-        (o) => o.key === draggable.id
-      );
+      const observation = observations()?.find((o) => o.key === draggable.id);
       if (observation) {
         setActiveItem(observation);
       }
@@ -288,18 +284,10 @@ const Board = () => {
 
   createEffect(() => {
     setContainers({
-      NEW:
-        observations()?._embedded.observations?.filter(
-          (o) => o.status === "NEW"
-        ) ?? [],
+      NEW: observations()?.filter((o) => o.status === "NEW") ?? [],
       IN_PROGRESS:
-        observations()?._embedded.observations?.filter(
-          (o) => o.status === "IN_PROGRESS"
-        ) ?? [],
-      DONE:
-        observations()?._embedded.observations?.filter(
-          (o) => o.status === "DONE"
-        ) ?? [],
+        observations()?.filter((o) => o.status === "IN_PROGRESS") ?? [],
+      DONE: observations()?.filter((o) => o.status === "DONE") ?? [],
     });
   });
 

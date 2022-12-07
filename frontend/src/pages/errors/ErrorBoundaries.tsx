@@ -1,13 +1,8 @@
 import { HTTPError } from "ky";
-import { Navigate } from "solid-app-router";
-import { Component, ErrorBoundary, JSXElement } from "solid-js";
-import _404 from "./404";
+import { Navigate } from "@solidjs/router";
+import { ErrorBoundary, ParentComponent } from "solid-js";
 
-type ErrorBoundariesProps = {
-  children: JSXElement;
-};
-
-export const ErrorBoundaries: Component<ErrorBoundariesProps> = (props) => {
+export const ErrorBoundaries: ParentComponent = (props) => {
   return (
     <ErrorBoundary
       fallback={(err: Error, reset) => {
@@ -17,8 +12,8 @@ export const ErrorBoundaries: Component<ErrorBoundariesProps> = (props) => {
           if (response.status === 401) {
             return <Navigate href="/login" />;
           }
-          if (response.status === 404) {
-            return <_404 />;
+          if (response.status === 403 || response.status === 404) {
+            return <Navigate href="/not-found" />;
           }
         }
 
@@ -26,6 +21,8 @@ export const ErrorBoundaries: Component<ErrorBoundariesProps> = (props) => {
           <div>
             <h1>Something went wrong</h1>
             <p>{err.toString()}</p>
+            <a href="/">Go back</a>
+            {" | "}
             <button onClick={reset}>Try again</button>
           </div>
         );
