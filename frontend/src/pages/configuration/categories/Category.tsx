@@ -1,45 +1,44 @@
-import { Link, useParams } from "solid-app-router";
-import { Component, createResource, Suspense } from "solid-js";
-import { CategoryDto } from "../../../models/Category";
-import { api } from "../../../utils/utils";
-
-export const fetchCategory = async (id: string) => {
-  return await api.get(`categories/${id}`).json<CategoryDto>();
-};
+import { useNavigate, useRouteData } from "@solidjs/router";
+import { Component } from "solid-js";
+import ConfigurationDetailLayout from "../../../layouts/ConfigurationDetailLayout";
+import CategoryService, {
+  CategoryData,
+} from "../../../services/CategoryService";
 
 const Category: Component = () => {
-  const params = useParams();
-  const [category] = createResource(() => params.id, fetchCategory);
+  const navigate = useNavigate();
+  const categoryService = CategoryService();
+  const [category] = useRouteData<CategoryData>();
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      categoryService.deleteCategory(category()!.id.toString());
+      navigate("/configuration/categories");
+    }
+  };
 
   return (
-    <>
-      <div class="flex mb-5">
-        <h1 class="text-xl">Category</h1>
-
-        <Link
-          class="ml-4 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          href="edit"
-        >
-          Edit
-        </Link>
-      </div>
-
-      <Suspense fallback={<div>Loading...</div>}>
-        <p>
-          <strong>Name:</strong> {category()?.name}
-          <br />
-          <strong>Severity:</strong> {category()?.severity.name}
-          <br />
-          <strong class="ml-5">Level: </strong>
-          {category()?.severity.level}
-          <br />
-          <strong>Consequence:</strong> {category()?.consequence.name}
-          <br />
-          <strong class="ml-5">Probability: </strong>
-          {category()?.consequence.probability}
-        </p>
-      </Suspense>
-    </>
+    <ConfigurationDetailLayout
+      heading="Category"
+      actions={{
+        edit: category()?._links?.put ? () => navigate("edit") : undefined,
+        delete: category()?._links?.delete ? handleDelete : undefined,
+      }}
+    >
+      <p>
+        <strong>Name:</strong> {category()?.name}
+        <br />
+        <strong>Severity:</strong> {category()?.severity.name}
+        <br />
+        <strong class="ml-5">Level: </strong>
+        {category()?.severity.level}
+        <br />
+        <strong>Consequence:</strong> {category()?.consequence.name}
+        <br />
+        <strong class="ml-5">Probability: </strong>
+        {category()?.consequence.probability}
+      </p>
+    </ConfigurationDetailLayout>
   );
 };
 
