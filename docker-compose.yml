@@ -1,0 +1,36 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: safetydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass123
+    networks:
+      - safety
+
+  backend:
+    image: safety-backend
+    restart: unless-stopped
+    build:
+      context: ./backend
+    depends_on:
+      - db
+    networks:
+      - safety
+  
+  frontend:
+    image: safety-frontend
+    restart: unless-stopped
+    build:
+      context: ./frontend
+    ports:
+      - 9000:80
+    networks:
+      - safety
+
+networks:
+  safety:
+    driver: bridge
