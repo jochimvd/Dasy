@@ -1,37 +1,36 @@
-import { Link, useParams } from "solid-app-router";
-import { Component, createResource, Suspense } from "solid-js";
-import { SeverityDto } from "../../../models/Severity";
-import { api } from "../../../utils/utils";
-
-export const fetchSeverity = async (id: string) => {
-  return await api.get(`severities/${id}`).json<SeverityDto>();
-};
+import { useNavigate, useRouteData } from "@solidjs/router";
+import { Component } from "solid-js";
+import ConfigurationDetailLayout from "../../../layouts/ConfigurationDetailLayout";
+import SeverityService, {
+  SeverityData,
+} from "../../../services/SeverityService";
 
 const Severity: Component = () => {
-  const params = useParams();
-  const [severity] = createResource(() => params.id, fetchSeverity);
+  const navigate = useNavigate();
+  const severityService = SeverityService();
+  const [severity] = useRouteData<SeverityData>();
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this severity?")) {
+      severityService.deleteSeverity(severity()!.id.toString());
+      navigate("/configuration/severities");
+    }
+  };
 
   return (
-    <>
-      <div class="flex mb-5">
-        <h1 class="text-xl">Severity</h1>
-
-        <Link
-          class="ml-4 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          href="edit"
-        >
-          Edit
-        </Link>
-      </div>
-
-      <Suspense fallback={<div>Loading...</div>}>
-        <p>
-          <strong>Name:</strong> {severity()?.name}
-          <br />
-          <strong>Level:</strong> {severity()?.level}
-        </p>
-      </Suspense>
-    </>
+    <ConfigurationDetailLayout
+      heading="Severity"
+      actions={{
+        edit: severity()?._links?.put ? () => navigate("edit") : undefined,
+        delete: severity()?._links?.delete ? handleDelete : undefined,
+      }}
+    >
+      <p>
+        <strong>Name:</strong> {severity()?.name}
+        <br />
+        <strong>Level:</strong> {severity()?.level}
+      </p>
+    </ConfigurationDetailLayout>
   );
 };
 
