@@ -1,11 +1,5 @@
-import {
-  createEffect,
-  createResource,
-  createSignal,
-  For,
-  Show,
-} from "solid-js";
-import { fetchLocations } from "../../pages/configuration/locations/Locations";
+import { createEffect, createSignal, For, Show, Suspense } from "solid-js";
+import LocationService from "../../services/LocationService";
 
 type LocationFilterProps = {
   filter?: number[];
@@ -13,7 +7,9 @@ type LocationFilterProps = {
 };
 
 const LocationFilter = (props: LocationFilterProps) => {
-  const [locations] = createResource(fetchLocations);
+  const [data] = LocationService().locationsData();
+  const locations = () => data()?._embedded?.locations;
+
   const [filter, setFilter] = createSignal<number[]>(props.filter ?? []);
   const [show, setShow] = createSignal(false);
 
@@ -23,7 +19,7 @@ const LocationFilter = (props: LocationFilterProps) => {
 
   return (
     <>
-      {/* <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" --> */}
+      {/* Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" */}
       <div class="flex justify-between items-center hover:bg-gray-100">
         <button
           class="group inline-flex flex-grow items-center font-medium text-gray-700 hover:text-gray-900 px-4 py-2"
@@ -68,35 +64,39 @@ const LocationFilter = (props: LocationFilterProps) => {
       </div>
       <Show when={show()}>
         <fieldset class="space-y-3 mx-4 my-2">
-          <For each={locations()}>
-            {(location) => (
-              <div class="relative flex items-start">
-                <div class="flex items-center h-5">
-                  <input
-                    id={location.name}
-                    name={location.name}
-                    type="checkbox"
-                    class="hover:cursor-pointer focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 rounded"
-                    checked={filter().includes(location.id)}
-                    onChange={(e) => {
-                      const newFilter = e.currentTarget.checked
-                        ? [...filter(), location.id]
-                        : filter().filter((c) => c !== location.id);
+          <Suspense
+            fallback={<div class="text-gray-500 text-sm">Loading...</div>}
+          >
+            <For each={locations()}>
+              {(location) => (
+                <div class="relative flex items-start">
+                  <div class="flex items-center h-5">
+                    <input
+                      id={location.name}
+                      name={location.name}
+                      type="checkbox"
+                      class="hover:cursor-pointer focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 rounded"
+                      checked={filter().includes(location.id)}
+                      onChange={(e) => {
+                        const newFilter = e.currentTarget.checked
+                          ? [...filter(), location.id]
+                          : filter().filter((c) => c !== location.id);
 
-                      setFilter(newFilter);
-                    }}
-                  />
+                        setFilter(newFilter);
+                      }}
+                    />
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <label for={location.name} class="text-gray-700">
+                      <span class="line-clamp-1" title={location.name}>
+                        {location.name}
+                      </span>
+                    </label>
+                  </div>
                 </div>
-                <div class="ml-3 text-sm">
-                  <label for={location.name} class="text-gray-700">
-                    <span class="line-clamp-1" title={location.name}>
-                      {location.name}
-                    </span>
-                  </label>
-                </div>
-              </div>
-            )}
-          </For>
+              )}
+            </For>
+          </Suspense>
           <legend class="sr-only">Locations</legend>
         </fieldset>
       </Show>

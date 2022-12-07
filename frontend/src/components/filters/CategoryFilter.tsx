@@ -1,11 +1,5 @@
-import {
-  createEffect,
-  createResource,
-  createSignal,
-  For,
-  Show,
-} from "solid-js";
-import { fetchCategories } from "../../pages/configuration/categories/Categories";
+import { createEffect, createSignal, For, Show, Suspense } from "solid-js";
+import CategoryService from "../../services/CategoryService";
 
 type CategoryFilterProps = {
   filter?: number[];
@@ -13,7 +7,9 @@ type CategoryFilterProps = {
 };
 
 const CategoryFilter = (props: CategoryFilterProps) => {
-  const [categories] = createResource(fetchCategories);
+  const [data] = CategoryService().categoriesData();
+  const categories = () => data()?._embedded?.categories;
+
   const [filter, setFilter] = createSignal<number[]>(props.filter ?? []);
   const [show, setShow] = createSignal(false);
 
@@ -23,7 +19,7 @@ const CategoryFilter = (props: CategoryFilterProps) => {
 
   return (
     <>
-      {/* <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" --> */}
+      {/* Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" */}
       <div class="flex justify-between items-center hover:bg-gray-100">
         <button
           class="group inline-flex flex-grow items-center font-medium text-gray-700 hover:text-gray-900 px-4 py-2"
@@ -68,35 +64,39 @@ const CategoryFilter = (props: CategoryFilterProps) => {
       </div>
       <Show when={show()}>
         <fieldset class="space-y-3 mx-4 my-2">
-          <For each={categories()}>
-            {(category) => (
-              <div class="relative flex items-start">
-                <div class="flex items-center h-5">
-                  <input
-                    id={category.name}
-                    name={category.name}
-                    type="checkbox"
-                    class="hover:cursor-pointer focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 rounded"
-                    checked={filter().includes(category.id)}
-                    onChange={(e) => {
-                      const newFilter = e.currentTarget.checked
-                        ? [...filter(), category.id]
-                        : filter().filter((c) => c !== category.id);
+          <Suspense
+            fallback={<div class="text-gray-500 text-sm">Loading...</div>}
+          >
+            <For each={categories()}>
+              {(category) => (
+                <div class="relative flex items-start">
+                  <div class="flex items-center h-5">
+                    <input
+                      id={category.name}
+                      name={category.name}
+                      type="checkbox"
+                      class="hover:cursor-pointer focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 rounded"
+                      checked={filter().includes(category.id)}
+                      onChange={(e) => {
+                        const newFilter = e.currentTarget.checked
+                          ? [...filter(), category.id]
+                          : filter().filter((c) => c !== category.id);
 
-                      setFilter(newFilter);
-                    }}
-                  />
+                        setFilter(newFilter);
+                      }}
+                    />
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <label for={category.name} class="text-gray-700">
+                      <span class="line-clamp-1" title={category.name}>
+                        {category.name}
+                      </span>
+                    </label>
+                  </div>
                 </div>
-                <div class="ml-3 text-sm">
-                  <label for={category.name} class="text-gray-700">
-                    <span class="line-clamp-1" title={category.name}>
-                      {category.name}
-                    </span>
-                  </label>
-                </div>
-              </div>
-            )}
-          </For>
+              )}
+            </For>
+          </Suspense>
           <legend class="sr-only">Categories</legend>
         </fieldset>
       </Show>

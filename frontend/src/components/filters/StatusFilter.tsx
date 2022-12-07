@@ -16,7 +16,7 @@ const StatusFilter = (props: StatusFilterProps) => {
 
   return (
     <>
-      {/* <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" --> */}
+      {/* Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" */}
       <div class="flex justify-between items-center hover:bg-gray-100">
         <button
           class="group inline-flex flex-grow items-center font-medium text-gray-700 hover:text-gray-900 px-4 py-2"

@@ -1,5 +1,4 @@
-import { createResource, For, Show } from "solid-js";
-import { fetchCategories } from "../../pages/configuration/categories/Categories";
+import { Show } from "solid-js";
 
 type SelectProps = {
   value?: number;
@@ -7,7 +6,7 @@ type SelectProps = {
 };
 
 const DateFilter = () => {
-  const [categories] = createResource(fetchCategories);
+  // const [categories] = createResource(fetchCategories);
 
   return (
     <>

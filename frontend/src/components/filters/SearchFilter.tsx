@@ -1,13 +1,5 @@
-import { useSearchParams } from "solid-app-router";
-import {
-  batch,
-  createEffect,
-  createSignal,
-  For,
-  on,
-  Show,
-  untrack,
-} from "solid-js";
+import { useSearchParams } from "@solidjs/router";
+import { createEffect, createSignal, For, on, Show } from "solid-js";
 import { ObservationSearchParams } from "../../pages/observations/Observations";
 import { clickOutside } from "../../utils/Directives";
 
@@ -48,7 +40,7 @@ const SearchFilter = () => {
   createEffect(
     on(column, (f) => {
       if (value()) {
-        const newParams = { ...emptyParams, [f.key]: value() };
+        const newParams = { ...emptyParams, [f.key]: value().trim() };
         setSearchParams(newParams);
       }
     })
@@ -87,7 +79,7 @@ const SearchFilter = () => {
 
                 // Wait for waitTime ms and then send the result
                 timer = setTimeout(() => {
-                  setSearchParams({ [column().key]: value(), page: "" });
+                  setSearchParams({ [column().key]: value().trim(), page: "" });
                 }, waitTime);
               }}
             />

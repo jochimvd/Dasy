@@ -101,8 +101,9 @@ const ColumnSelector = () => {
                           id={columnEntry.col.label}
                           name={columnEntry.col.label}
                           type="checkbox"
-                          class="hover:cursor-pointer focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 rounded"
+                          class="hover:cursor-pointer focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 rounded disabled:cursor-not-allowed disabled:opacity-50"
                           checked={columnEntry.show}
+                          disabled={columnEntry.col.key === "key"}
                           onChange={(e) => {
                             setObservationTableColumns(
                               "column",
@@ -117,6 +118,9 @@ const ColumnSelector = () => {
                         <label
                           for={columnEntry.col.label}
                           class="text-gray-700"
+                          classList={{
+                            "opacity-50": columnEntry.col.key === "key",
+                          }}
                         >
                           <span class="truncate">{columnEntry.col.label}</span>
                         </label>

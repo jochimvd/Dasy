@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { Status } from "../../models/Status";
 import { ObservationSearchParams } from "../../pages/observations/Observations";
 import CategoryFilter from "./CategoryFilter";
@@ -6,7 +6,7 @@ import LocationFilter from "./LocationFilter";
 import StatusFilter from "./StatusFilter";
 import { clickOutside } from "../../utils/Directives";
 import DangerFilter from "./DangerFilter";
-import { useSearchParams } from "solid-app-router";
+import { useSearchParams } from "@solidjs/router";
 
 const GeneralFilter = () => {
   let filterButton;
