@@ -1,6 +1,6 @@
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { formatStatus, Status, Statuses } from "../../models/Status";
-import { ChevronLeftS } from "../../utils/icons";
+import { ChevronLeftS } from "../../utils/Icons";
 
 type StatusFilterProps = {
   filter?: Status[];

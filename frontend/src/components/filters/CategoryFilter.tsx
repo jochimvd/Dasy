@@ -1,6 +1,6 @@
 import { createEffect, createSignal, For, Show, Suspense } from "solid-js";
 import CategoryService from "../../services/CategoryService";
-import { ChevronLeftS } from "../../utils/icons";
+import { ChevronLeftS } from "../../utils/Icons";
 
 type CategoryFilterProps = {
   filter?: number[];

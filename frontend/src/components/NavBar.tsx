@@ -4,7 +4,7 @@ import { useService } from "solid-services";
 import { UserDto } from "../models/User";
 import AuthService from "../services/AuthService";
 import { clickOutside } from "../utils/Directives";
-import { BellOutline, MenuOutline, PlusS, XOutline } from "../utils/icons";
+import { BellOutline, MenuOutline, PlusS, XOutline } from "../utils/Icons";
 
 const navigation = [
   { name: "Home", href: "/", end: true },

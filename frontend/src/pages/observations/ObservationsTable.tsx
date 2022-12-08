@@ -3,7 +3,7 @@ import { Component, For, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { ObservationDto } from "../../models/Observation";
 import { prettyFormatStatus } from "../../models/Status";
-import { ChevronDownS, ChevronUpDownS, CubeOutline } from "../../utils/icons";
+import { ChevronDownS, ChevronUpDownS, CubeOutline } from "../../utils/Icons";
 import { formatDate } from "../../utils/utils";
 import { ObservationSearchParams } from "./Observations";
 

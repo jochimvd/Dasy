@@ -1,5 +1,5 @@
 import { createEffect, createSignal, For, Show } from "solid-js";
-import { ChevronLeftS } from "../../utils/icons";
+import { ChevronLeftS } from "../../utils/Icons";
 
 type DangerFilterProps = {
   filter?: boolean[];

@@ -1,6 +1,6 @@
 import { Component, mergeProps, Show } from "solid-js";
 import { Page } from "../models/Common";
-import { ChevronLeftS } from "../utils/icons";
+import { ChevronLeftS } from "../utils/Icons";
 
 type PaginationProps = {
   pageMeta: Page;

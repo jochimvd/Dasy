@@ -11,7 +11,7 @@ import {
   ChevronDownOutline,
   FunnelOutline,
   FunnelSolid,
-} from "../../utils/icons";
+} from "../../utils/Icons";
 
 const GeneralFilter = () => {
   let filterButton;

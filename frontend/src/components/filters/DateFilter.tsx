@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import { CalendarOutline, ChevronDownOutline } from "../../utils/icons";
+import { CalendarOutline, ChevronDownOutline } from "../../utils/Icons";
 
 type SelectProps = {
   value?: number;

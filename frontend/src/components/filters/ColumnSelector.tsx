@@ -4,7 +4,7 @@ import {
   setObservationTableColumns,
 } from "../../pages/observations/ObservationsTable";
 import { clickOutside } from "../../utils/Directives";
-import { AdjustmentsHorizontalOutline } from "../../utils/icons";
+import { AdjustmentsHorizontalOutline } from "../../utils/Icons";
 
 const ColumnSelector = () => {
   let columnButton;

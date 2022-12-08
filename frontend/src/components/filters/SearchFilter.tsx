@@ -2,7 +2,7 @@ import { useSearchParams } from "@solidjs/router";
 import { createEffect, createSignal, For, on, Show } from "solid-js";
 import { ObservationSearchParams } from "../../pages/observations/Observations";
 import { clickOutside } from "../../utils/Directives";
-import { ChevronUpDownS, MagnifyingGlassS, XMarkS } from "../../utils/icons";
+import { ChevronUpDownS, MagnifyingGlassS, XMarkS } from "../../utils/Icons";
 
 const SearchFilter = () => {
   let columnButton;

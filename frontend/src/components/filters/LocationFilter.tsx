@@ -1,6 +1,6 @@
 import { createEffect, createSignal, For, Show, Suspense } from "solid-js";
 import LocationService from "../../services/LocationService";
-import { ChevronLeftS } from "../../utils/icons";
+import { ChevronLeftS } from "../../utils/Icons";
 
 type LocationFilterProps = {
   filter?: number[];
