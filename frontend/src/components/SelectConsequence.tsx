@@ -23,7 +23,7 @@ const SelectConsequence = (props: SelectProps) => {
         }}
         required
       >
-        <option value="">Select a consequence</option>
+        <option>Select a consequence</option>
         <For each={consequences()}>
           {(consequence) => (
             <option

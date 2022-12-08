@@ -23,7 +23,7 @@ const SelectCategory = (props: SelectProps) => {
         }}
         required
       >
-        <option value="">Select a category</option>
+        <option>Select a category</option>
         <For each={categories()?.sort((a, b) => a.name.localeCompare(b.name))}>
           {(category) => (
             <option value={category.id} selected={props.value === category.id}>

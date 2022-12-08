@@ -23,7 +23,7 @@ const SelectSeverity = (props: SelectProps) => {
         }}
         required
       >
-        <option value="">Select a severity</option>
+        <option>Select a severity</option>
         <For each={severities()}>
           {(severity) => (
             <option value={severity.id} selected={props.value === severity.id}>

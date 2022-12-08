@@ -23,7 +23,7 @@ const SelectLocation = (props: SelectProps) => {
         }}
         required
       >
-        <option value="">Select a location</option>
+        <option>Select a location</option>
         <For each={locations()?.sort((a, b) => a.name.localeCompare(b.name))}>
           {(location) => (
             <option value={location.id} selected={props.value === location.id}>
