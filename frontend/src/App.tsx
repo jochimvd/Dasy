@@ -1,4 +1,4 @@
-import { Route, Routes } from "@solidjs/router";
+import { Navigate, Route, Routes } from "@solidjs/router";
 import { Component, lazy, Suspense } from "solid-js";
 import Loader from "./components/Loader";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -72,7 +72,7 @@ const App: Component = () => {
           <Routes>
             <ProtectedRoute redirect="/login">
               <Route path="/" component={NavbarLayout}>
-                <Route path="/" component={Home} />
+                <Route path="/" element={<Navigate href={"/observations"} />} />
                 <Route path="/board" component={Board} />
                 <Route path="/observations">
                   <Route
