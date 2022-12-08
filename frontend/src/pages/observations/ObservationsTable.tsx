@@ -3,6 +3,7 @@ import { Component, For, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { ObservationDto } from "../../models/Observation";
 import { prettyFormatStatus } from "../../models/Status";
+import { ChevronDownS, ChevronUpDownS, CubeOutline } from "../../utils/icons";
 import { formatDate } from "../../utils/utils";
 import { ObservationSearchParams } from "./Observations";
 
@@ -196,36 +197,14 @@ const ObservationsTable: Component<ObservationTableProps> = (props) => {
                         <span class="inline-flex text-gray-400">
                           <Show
                             when={searchParams.orderBy === column.key}
-                            fallback={
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                class="w-4 h-4"
-                              >
-                                <path
-                                  fill-rule="evenodd"
-                                  d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
-                                  clip-rule="evenodd"
-                                />
-                              </svg>
-                            }
+                            fallback={<ChevronUpDownS class="w-4 h-4" />}
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
+                            <ChevronDownS
                               class="w-4 h-4"
                               classList={{
                                 "rotate-180": searchParams.orderDir === "ASC",
                               }}
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
+                            />
                           </Show>
                         </span>
                       </button>
@@ -248,21 +227,7 @@ const ObservationsTable: Component<ObservationTableProps> = (props) => {
               <td colspan={100}>
                 <div class="w-full my-12">
                   <div class="text-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="mx-auto h-12 w-12 text-gray-400"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M21 7.5l-2.25-1.313M21 7.5v2.25m0-2.25l-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3l2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75l2.25-1.313M12 21.75V19.5m0 2.25l-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25"
-                      />
-                    </svg>
-
+                    <CubeOutline class="mx-auto h-12 w-12 text-gray-400" />
                     {props.loading ? (
                       <h3 class="mt-2 text-sm font-medium text-gray-900">
                         Loading...

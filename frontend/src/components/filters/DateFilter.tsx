@@ -1,4 +1,5 @@
 import { Show } from "solid-js";
+import { CalendarOutline, ChevronDownOutline } from "../../utils/icons";
 
 type SelectProps = {
   value?: number;
@@ -19,35 +20,12 @@ const DateFilter = () => {
             aria-expanded="true"
             aria-haspopup="true"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5 mr-2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
-              />
-            </svg>
+            <CalendarOutline class="w-5 h-5 mr-2" />
             Any Date
-            {/* <!-- Heroicon name: solid/chevron-down --> */}
-            <svg
+            <ChevronDownOutline
               class="-mr-1 ml-2 h-5 w-5"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              />
-            </svg>
+              classList={{ "-rotate-180": false }}
+            />
           </button>
         </div>
 

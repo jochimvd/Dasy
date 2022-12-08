@@ -4,7 +4,7 @@ import { useService } from "solid-services";
 import { UserDto } from "../models/User";
 import AuthService from "../services/AuthService";
 import { clickOutside } from "../utils/Directives";
-import { isLoading } from "./Loader";
+import { BellOutline, MenuOutline, PlusS, XOutline } from "../utils/icons";
 
 const navigation = [
   { name: "Home", href: "/", end: true },
@@ -68,58 +68,18 @@ const NavBar = () => {
                     ref={mobileNavMenuButton}
                   >
                     <span class="sr-only">Open main menu</span>
-                    {/*
-                      Icon when menu is closed.
-
-                      Heroicon name: outline/menu
-
-                      Menu open: "hidden", Menu closed: "block"
-                    */}
-                    <svg
+                    <MenuOutline
                       classList={{
                         hidden: mobileNavMenu(),
                         block: !mobileNavMenu(),
                       }}
-                      class="h-6 w-6"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 6h16M4 12h16M4 18h16"
-                      />
-                    </svg>
-                    {/*
-                      Icon when menu is open.
-
-                      Heroicon name: outline/x
-
-                      Menu open: "block", Menu closed: "hidden"
-                    */}
-                    <svg
+                    />
+                    <XOutline
                       classList={{
                         block: mobileNavMenu(),
                         hidden: !mobileNavMenu(),
                       }}
-                      class="h-6 w-6"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
+                    />
                   </button>
                 </div>
                 <div class="flex-shrink-0 flex items-center">
@@ -153,20 +113,7 @@ const NavBar = () => {
                     href="/observations/create"
                     class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                   >
-                    {/* Heroicon name: solid/plus-sm */}
-                    <svg
-                      class="-ml-1 mr-2 h-5 w-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
+                    <PlusS class="-ml-1 mr-2 h-5 w-5" />
                     New Observation
                   </A>
                 </div>
@@ -176,22 +123,7 @@ const NavBar = () => {
                     class="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                   >
                     <span class="sr-only">View notifications</span>
-                    {/* Heroicon name: outline/bell */}
-                    <svg
-                      class="h-6 w-6"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      />
-                    </svg>
+                    <BellOutline />
                   </button>
 
                   {/* Profile dropdown */}
@@ -313,22 +245,7 @@ const NavBar = () => {
                     class="ml-auto flex-shrink-0 bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                   >
                     <span class="sr-only">View notifications</span>
-                    {/* Heroicon name: outline/bell */}
-                    <svg
-                      class="h-6 w-6"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      />
-                    </svg>
+                    <BellOutline />
                   </button>
                 </div>
                 <div class="mt-3 space-y-1">
