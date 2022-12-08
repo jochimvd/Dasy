@@ -70,7 +70,7 @@ export const CategoryEdit = () => {
           <SelectSeverity
             value={state.severity?.id}
             setSeverity={(id) => {
-              setState("severity", "id", id);
+              setState("severity", { id: id });
             }}
           />
         </div>
@@ -79,7 +79,7 @@ export const CategoryEdit = () => {
           <SelectConsequence
             value={state.consequence?.id}
             setConsequence={(id) => {
-              setState("consequence", "id", id);
+              setState("consequence", { id: id });
             }}
           />
         </div>
