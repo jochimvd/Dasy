@@ -1,4 +1,4 @@
-import ky, { Options } from "ky";
+import ky, { HTTPError, Options } from "ky";
 import { batch, createEffect, createResource, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import { UserDto } from "../models/User";
@@ -124,7 +124,12 @@ const AuthService = () => {
     try {
       return await api(url, options).json<T>();
     } catch (err: any) {
-      console.error("request failed: ", err);
+      if (err instanceof HTTPError) {
+        console.error("request failed: ", await err.response.json());
+      } else {
+        console.error("request failed: ", err);
+      }
+
       throw err;
     }
   };
@@ -135,7 +140,6 @@ const AuthService = () => {
   );
 
   createEffect(() => {
-    console.log("currentUser", currentUser());
     setSession("user", currentUser());
   });
 
