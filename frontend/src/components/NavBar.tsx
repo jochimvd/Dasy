@@ -14,8 +14,9 @@ const navigation = [
 ];
 
 const userNavigation = [
-  { name: "Your Profile", href: "/users/me" },
-  { name: "Settings", href: "/settings" },
+  { name: "Account settings", href: "/users/me" },
+  { name: "Support", href: "/support" },
+  { name: "License", href: "/license" },
 ];
 
 const formatUserInitials = (user?: UserDto) => {
@@ -91,7 +92,6 @@ const NavBar = () => {
                   </A>
                 </div>
                 <div class="hidden md:ml-6 md:flex md:space-x-8">
-                  {/* Current: "border-orange-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
                   <For each={navigation}>
                     {(item) => (
                       <A
@@ -155,38 +155,55 @@ const NavBar = () => {
                     */}
                     <Show when={userMenu()}>
                       <div
-                        class="z-50 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                        class="z-50 origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
                         role="menu"
                         aria-orientation="vertical"
-                        aria-labelledby="user-menu-button"
+                        aria-labelledby="menu-button"
                         tabindex="-1"
                         use:clickOutside={[
                           () => setUserMenu(false),
                           userAvatarButton,
                         ]}
                       >
-                        <For each={userNavigation}>
-                          {(item) => (
-                            <A
-                              href={item.href}
-                              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              activeClass="bg-gray-100"
-                              role="menuitem"
-                              tabindex="-1"
-                              onClick={() => setUserMenu(false)}
-                            >
-                              {item.name}
-                            </A>
-                          )}
-                        </For>
-                        <button
-                          class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                          tabindex="-1"
-                          onClick={auth().logout}
-                        >
-                          Sign Out
-                        </button>
+                        <div class="px-4 py-3" role="none">
+                          <p class="text-sm" role="none">
+                            Signed in as
+                          </p>
+                          <p
+                            class="text-sm font-medium text-gray-900 truncate"
+                            role="none"
+                          >
+                            {loggedInUser()?.email}
+                          </p>
+                        </div>
+                        <div class="py-1" role="none">
+                          <For each={userNavigation}>
+                            {(item, index) => (
+                              <A
+                                href={item.href}
+                                class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
+                                activeClass="bg-gray-100 text-gray-900"
+                                role="menuitem"
+                                tabindex="-1"
+                                id={`menu-item-${index()}`}
+                              >
+                                {item.name}
+                              </A>
+                            )}
+                          </For>
+                        </div>
+                        <div class="py-1" role="none">
+                          <button
+                            type="submit"
+                            class="text-gray-700 block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
+                            role="menuitem"
+                            tabindex="-1"
+                            id={`menu-item-${userNavigation.length}`}
+                            onClick={auth().logout}
+                          >
+                            Sign out
+                          </button>
+                        </div>
                       </div>
                     </Show>
                   </div>
@@ -197,16 +214,8 @@ const NavBar = () => {
 
           {/* Mobile menu, show/hide based on menu state. */}
           <Show when={mobileNavMenu()}>
-            <div
-              class="md:hidden"
-              id="mobile-menu"
-              // use:clickOutside={[
-              //   () => setMobileNavMenu(false),
-              //   mobileNavMenuButton,
-              // ]}
-            >
+            <div class="md:hidden" id="mobile-menu">
               <div class="pt-2 pb-3 space-y-1">
-                {/* Current: "bg-orange-50 border-orange-500 text-orange-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" */}
                 <For each={navigation}>
                   {(item) => (
                     <A
@@ -214,7 +223,6 @@ const NavBar = () => {
                       class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium sm:pl-5 sm:pr-6"
                       activeClass="bg-orange-50 border-orange-500 text-orange-700"
                       inactiveClass="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
-                      // onClick={() => setMobileNavMenu(false)}
                     >
                       {item.name}
                     </A>
@@ -262,7 +270,7 @@ const NavBar = () => {
                     class="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 sm:px-6"
                     onClick={auth().logout}
                   >
-                    Sign Out
+                    Sign out
                   </button>
                 </div>
               </div>
