@@ -78,7 +78,7 @@ public class ObservationServiceImpl implements ObservationService {
     @Transactional
     public boolean archiveOrDeleteById(long id) {
         Observation observation = getByIdOrThrow(id);
-        boolean deleted = true;
+        boolean deleted = false;
 
         if (deleted) {
             observationRepository.delete(observation);
