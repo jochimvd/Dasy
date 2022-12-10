@@ -25,7 +25,9 @@ public class ObservationDto implements UniqueEntity {
     private long id;
 
     @JsonView(Views.Reader.class)
-    @NotNull(message = "isNull")
+    private String key;
+
+    @JsonView(Views.Reader.class)
     private UserDto observer;
 
     @JsonView(Views.Reader.class)
@@ -55,6 +57,7 @@ public class ObservationDto implements UniqueEntity {
     private String type;
 
     @JsonView(Views.Reader.class)
+    @NotBlank(message = "isBlank")
     private String description;
 
     @JsonView(Views.Reader.class)
@@ -63,8 +66,4 @@ public class ObservationDto implements UniqueEntity {
     @JsonView(Views.Reader.class)
     private String furtherActions;
 
-
-    public String getKey() {
-        return "SOR-" + location.getName().substring(0,3).toUpperCase() + "-" + id;
-    }
 }

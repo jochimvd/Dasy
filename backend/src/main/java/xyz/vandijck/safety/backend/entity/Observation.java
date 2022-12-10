@@ -9,6 +9,7 @@ import org.hibernate.search.annotations.*;
 import xyz.vandijck.safety.backend.entity.common.Status;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -65,6 +66,7 @@ public class Observation implements UniqueEntity, Archivable {
     private Category category;
 
     @Column(name = "description", length = 1023)
+    @NotBlank(message = "isBlank")
     private String description;
 
     @Column(name = "actions_taken", length = 1023)
@@ -85,7 +87,14 @@ public class Observation implements UniqueEntity, Archivable {
 
 
     public String getKey() {
-        return "SOR-" + location.getName().substring(0,3).toUpperCase() + "-" + id;
+        String locationName = location.getName()
+                .replaceAll("[^a-zA-Z]", "");
+
+        return "SOR-" +
+                locationName
+                        .substring(0, Math.min(locationName.length(), 3))
+                        .toUpperCase() +
+                "-" + id;
     }
 
     @Override
