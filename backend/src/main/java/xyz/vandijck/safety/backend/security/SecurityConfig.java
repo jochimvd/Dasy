@@ -1,5 +1,6 @@
 package xyz.vandijck.safety.backend.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -36,6 +37,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     private PasswordEncoder passwordEncoder;
 
+    @Value("${app.signed-url-base}")
+    private String url;
+
     /**
      * Creates the default security config.
      *
@@ -56,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource(Environment environment) {
         CorsConfiguration configuration = new CorsConfiguration();
         if (Arrays.asList(environment.getActiveProfiles()).contains("prod")) {
-            configuration.setAllowedOrigins(List.of("http://safety.vandijck.xyz"));
+            configuration.setAllowedOrigins(List.of(url));
         } else {
             configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         }
