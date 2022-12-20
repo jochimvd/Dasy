@@ -1,0 +1,248 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="jochim (generated)" id="1671483242164-1">
+        <createTable tableName="category">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="categoryPK"/>
+            </column>
+            <column name="archived" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(1023)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="severity_level" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reoccurrence_id" type="BIGINT"/>
+            <column name="severity_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-2">
+        <createTable tableName="company">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="companyPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-3">
+        <createTable tableName="observation">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="observationPK"/>
+            </column>
+            <column name="actions_taken" type="VARCHAR(1023)"/>
+            <column name="archived" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(1023)"/>
+            <column name="further_actions" type="VARCHAR(1023)"/>
+            <column name="immediate_danger" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="observed_at" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="company_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="observer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="site_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-4">
+        <createTable tableName="refresh_token">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="refresh_tokenPK"/>
+            </column>
+            <column name="expiration" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="token" type="BYTEA">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-5">
+        <createTable tableName="reoccurrence">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="reoccurrencePK"/>
+            </column>
+            <column name="archived" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(1023)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rate" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-6">
+        <createTable tableName="reset_token">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="reset_tokenPK"/>
+            </column>
+            <column name="expiration" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="token" type="BYTEA">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-7">
+        <createTable tableName="severity">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="severityPK"/>
+            </column>
+            <column name="archived" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(1023)"/>
+            <column name="level" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-8">
+        <createTable tableName="site">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="sitePK"/>
+            </column>
+            <column name="archived" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="latitude" type="FLOAT8"/>
+            <column name="longitude" type="FLOAT8"/>
+            <column name="description" type="VARCHAR(1023)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-9">
+        <createTable tableName="type">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="typePK"/>
+            </column>
+            <column name="archived" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notify" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-10">
+        <createTable tableName="user">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="userPK"/>
+            </column>
+            <column name="activated" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city" type="VARCHAR(255)"/>
+            <column name="country" type="VARCHAR(255)"/>
+            <column name="street_with_number" type="VARCHAR(255)"/>
+            <column name="zip_code" type="VARCHAR(255)"/>
+            <column name="archived" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(60)"/>
+            <column name="phone_number" type="VARCHAR(255)"/>
+            <column name="picture_permission" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="registration_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(255)"/>
+            <column name="special_info" type="VARCHAR(255)"/>
+            <column name="company_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-11">
+        <createTable tableName="user_languages">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="user_languagesPK"/>
+            </column>
+            <column name="languages" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="user_languagesPK"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-12">
+        <addUniqueConstraint columnNames="name" constraintName="UC_COMPANYNAME_COL" tableName="company"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-13">
+        <addUniqueConstraint columnNames="name" constraintName="UC_SITENAME_COL" tableName="site"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-14">
+        <addUniqueConstraint columnNames="email" constraintName="UC_USEREMAIL_COL" tableName="user"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-15">
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="observation" constraintName="FK17s9of2lt3jqrkxck3uf8ybwr" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="category" validate="true"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-16">
+        <addForeignKeyConstraint baseColumnNames="type_id" baseTableName="observation" constraintName="FK4e8jlnfeiaaq7nobdf3ji0hry" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="type" validate="true"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-17">
+        <addForeignKeyConstraint baseColumnNames="site_id" baseTableName="observation" constraintName="FK6wxm0qlmsf8ulrk5a0h4hmov0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="site" validate="true"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-18">
+        <addForeignKeyConstraint baseColumnNames="company_id" baseTableName="user" constraintName="FK8qyjuwx3wckyjst0w42gftnie" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="company" validate="true"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-19">
+        <addForeignKeyConstraint baseColumnNames="reoccurrence_id" baseTableName="category" constraintName="FKcuoq2lb880p8wpmf8wpjp9bg3" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="reoccurrence" validate="true"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-20">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="reset_token" constraintName="FKfj0jgrcd4y6i54qwc91qkiwfg" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user" validate="true"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-21">
+        <addForeignKeyConstraint baseColumnNames="observer_id" baseTableName="observation" constraintName="FKiwvoeid1w9a7xj5hwampqmrbb" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user" validate="true"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-22">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_languages" constraintName="FKj4ro3qmmj29lkhxpl5tsveb69" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user" validate="true"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-23">
+        <addForeignKeyConstraint baseColumnNames="severity_id" baseTableName="category" constraintName="FKlfwqoxv2687rpgbnhyadfu5jp" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="severity" validate="true"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-24">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="refresh_token" constraintName="FKmi9hv3h00git04ihc5dbibqvx" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user" validate="true"/>
+    </changeSet>
+    <changeSet author="jochim (generated)" id="1671483242164-25">
+        <addForeignKeyConstraint baseColumnNames="company_id" baseTableName="observation" constraintName="FKt4jt1rthy2klmtgaacl340bub" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="company" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
