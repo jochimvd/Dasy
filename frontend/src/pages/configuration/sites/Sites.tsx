@@ -1,21 +1,21 @@
 import { A, useRouteData } from "@solidjs/router";
 import { Component, For } from "solid-js";
-import { LocationsData } from "../../../services/LocationService";
+import { SitesData } from "../../../services/SiteService";
 
-const Locations: Component = () => {
-  const [data] = useRouteData<LocationsData>();
-  const locations = () => data()?._embedded?.locations;
+const Sites: Component = () => {
+  const [data] = useRouteData<SitesData>();
+  const sites = () => data()?._embedded?.sites;
 
   return (
     <>
-      <section aria-labelledby="locations-heading">
+      <section aria-labelledby="sites-heading">
         <div class="bg-white pt-6 shadow sm:rounded-md sm:overflow-hidden">
           <div class="flex items-center justify-between px-4 sm:px-6">
             <h2
-              id="locations-heading"
+              id="sites-heading"
               class="text-lg leading-6 font-medium text-gray-900"
             >
-              Locations
+              Sites
             </h2>
 
             {data()?._links.post && (
@@ -23,7 +23,7 @@ const Locations: Component = () => {
                 href="create"
                 class="inline-flex items-center px-2.5 py-1.5 border border-orange-600 shadow-sm text-xs font-medium rounded text-orange-600 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
               >
-                New Location
+                New Site
               </A>
             )}
           </div>
@@ -43,7 +43,7 @@ const Locations: Component = () => {
                         {/*
                           `relative` is added here due to a weird bug in Safari that causes `sr-only` headings to introduce overflow on the body on mobile.
                         */}
-                        {locations()?.some((l) => l._links?.put) && (
+                        {sites()?.some((l) => l._links?.put) && (
                           <th
                             scope="col"
                             class="relative px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -54,16 +54,16 @@ const Locations: Component = () => {
                       </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                      <For each={locations()} fallback={<div>Loading...</div>}>
-                        {(location) => (
+                      <For each={sites()} fallback={<div>Loading...</div>}>
+                        {(site) => (
                           <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              <A href={`${location.id}`}>{location.name}</A>
+                              <A href={`${site.id}`}>{site.name}</A>
                             </td>
-                            {location._links?.put && (
+                            {site._links?.put && (
                               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <A
-                                  href={location.id + "/edit"}
+                                  href={site.id + "/edit"}
                                   class="text-orange-600 hover:text-orange-900"
                                 >
                                   Edit
@@ -85,4 +85,4 @@ const Locations: Component = () => {
   );
 };
 
-export default Locations;
+export default Sites;

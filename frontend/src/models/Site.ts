@@ -1,12 +1,12 @@
 import { Links } from "../utils/utils";
 
-export type LocationDto = {
+export type SiteDto = {
   id: number;
   name: string;
   _links?: Links;
 };
 
-export type LocationInput = {
+export type SiteInput = {
   id?: number;
   name?: string;
 };

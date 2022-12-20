@@ -7,20 +7,18 @@ import {
 import { Component, createComputed, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import ConfigurationEditLayout from "../../../layouts/ConfigurationEditLayout";
-import { LocationInput } from "../../../models/Location";
-import LocationService, {
-  LocationData,
-} from "../../../services/LocationService";
+import { SiteInput } from "../../../models/Site";
+import SiteService, { SiteData } from "../../../services/SiteService";
 
-export const LocationEdit: Component<{ new?: boolean }> = (props) => {
+export const SiteEdit: Component<{ new?: boolean }> = (props) => {
   const navigate = useNavigate();
 
-  const locationService = LocationService();
-  const [data, { mutate }] = useRouteData<LocationData>();
+  const siteService = SiteService();
+  const [data, { mutate }] = useRouteData<SiteData>();
   const [saving, setSaving] = createSignal(false);
 
-  const [state, setState] = createStore<LocationInput>({});
-  const updateState = (field: keyof LocationInput) => (e: Event) =>
+  const [state, setState] = createStore<SiteInput>({});
+  const updateState = (field: keyof SiteInput) => (e: Event) =>
     setState(field, (e.target as HTMLInputElement).value);
 
   const submitForm = async (e: Event) => {
@@ -28,21 +26,21 @@ export const LocationEdit: Component<{ new?: boolean }> = (props) => {
     setSaving(true);
 
     try {
-      const location = await (data()?.id
-        ? locationService.updateLocation
-        : locationService.createLocation)(state);
+      const site = await (data()?.id
+        ? siteService.updateSite
+        : siteService.createSite)(state);
 
-      mutate(location);
-      navigate("/configuration/locations/" + location.id);
+      mutate(site);
+      navigate("/configuration/sites/" + site.id);
     } catch (e) {
       setSaving(false);
     }
   };
 
   createComputed(() => {
-    const location = data();
-    if (location && location.id) {
-      const { _links, ...rest } = location;
+    const sites = data();
+    if (sites && sites.id) {
+      const { _links, ...rest } = sites;
       setState(rest);
     }
   });
@@ -63,8 +61,8 @@ export const LocationEdit: Component<{ new?: boolean }> = (props) => {
 
   return (
     <ConfigurationEditLayout
-      heading={"Location"}
-      subheading={"Create a new location or edit an existing one."}
+      heading={"Site"}
+      subheading={"Create a new site or edit an existing one."}
       saving={saving}
       onSubmit={submitForm}
     >
@@ -77,7 +75,7 @@ export const LocationEdit: Component<{ new?: boolean }> = (props) => {
             type="text"
             id="name"
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
-            placeholder="Location name"
+            placeholder="Site name"
             value={state.name ?? ""}
             onInput={updateState("name")}
           />
@@ -87,4 +85,4 @@ export const LocationEdit: Component<{ new?: boolean }> = (props) => {
   );
 };
 
-export default LocationEdit;
+export default SiteEdit;

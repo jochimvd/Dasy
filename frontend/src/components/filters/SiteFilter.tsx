@@ -1,15 +1,16 @@
 import { createEffect, createSignal, For, Show, Suspense } from "solid-js";
-import LocationService from "../../services/LocationService";
+import SiteService from "../../services/SiteService";
 import { ChevronLeftS } from "../../utils/Icons";
 
-type LocationFilterProps = {
+type SiteFilterProps = {
   filter?: number[];
-  setFilter: (locations: string) => void;
+  setFilter: (sites: string) => void;
 };
 
-const LocationFilter = (props: LocationFilterProps) => {
-  const [data] = LocationService().locationsData();
-  const locations = () => data()?._embedded?.locations;
+const SiteFilter = (props: SiteFilterProps) => {
+  const [data] = SiteService().sitesData();
+  const sites = () =>
+    data()?._embedded?.sites.sort((a, b) => a.name.localeCompare(b.name));
 
   const [filter, setFilter] = createSignal<number[]>(props.filter ?? []);
   const [show, setShow] = createSignal(false);
@@ -33,7 +34,7 @@ const LocationFilter = (props: LocationFilterProps) => {
             class="flex-shrink-0 -ml-1 mr-1 h-5 w-5 text-gray-400 group-hover:text-gray-500"
             classList={{ "rotate-180": !show(), "-rotate-90": show() }}
           />
-          <span>Location</span>
+          <span>Site</span>
           <Show when={filter().length > 0}>
             <span class="ml-1.5 rounded py-0.5 px-1.5 bg-gray-200 text-xs font-semibold text-gray-700 tabular-nums">
               {filter().length}
@@ -58,29 +59,29 @@ const LocationFilter = (props: LocationFilterProps) => {
           <Suspense
             fallback={<div class="text-gray-500 text-sm">Loading...</div>}
           >
-            <For each={locations()}>
-              {(location) => (
+            <For each={sites()}>
+              {(site) => (
                 <div class="relative flex items-start">
                   <div class="flex items-center h-5">
                     <input
-                      id={location.name}
-                      name={location.name}
+                      id={site.name}
+                      name={site.name}
                       type="checkbox"
                       class="hover:cursor-pointer focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 rounded"
-                      checked={filter().includes(location.id)}
+                      checked={filter().includes(site.id)}
                       onChange={(e) => {
                         const newFilter = e.currentTarget.checked
-                          ? [...filter(), location.id]
-                          : filter().filter((c) => c !== location.id);
+                          ? [...filter(), site.id]
+                          : filter().filter((c) => c !== site.id);
 
                         setFilter(newFilter);
                       }}
                     />
                   </div>
                   <div class="ml-3 text-sm">
-                    <label for={location.name} class="text-gray-700">
-                      <span class="line-clamp-1" title={location.name}>
-                        {location.name}
+                    <label for={site.name} class="text-gray-700">
+                      <span class="line-clamp-1" title={site.name}>
+                        {site.name}
                       </span>
                     </label>
                   </div>
@@ -88,11 +89,11 @@ const LocationFilter = (props: LocationFilterProps) => {
               )}
             </For>
           </Suspense>
-          <legend class="sr-only">Locations</legend>
+          <legend class="sr-only">Sites</legend>
         </fieldset>
       </Show>
     </>
   );
 };
 
-export default LocationFilter;
+export default SiteFilter;
