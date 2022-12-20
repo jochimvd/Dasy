@@ -5,5 +5,6 @@ export type UserDto = {
   firstName: string;
   lastName: string;
   email: string;
+  company: string;
   _links?: Links;
 };
