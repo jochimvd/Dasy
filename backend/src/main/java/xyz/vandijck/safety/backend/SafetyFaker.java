@@ -5,9 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import xyz.vandijck.safety.backend.entity.*;
 import xyz.vandijck.safety.backend.entity.common.Status;
-import xyz.vandijck.safety.backend.repository.LocationRepository;
+import xyz.vandijck.safety.backend.repository.CompanyRepository;
+import xyz.vandijck.safety.backend.repository.SiteRepository;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,11 +32,13 @@ public class SafetyFaker extends Faker {
 
     private boolean testEncoding;
 
-    private LocationRepository locationRepository;
+    private CompanyRepository companyRepository;
+
+    private SiteRepository siteRepository;
 
     @Autowired
-    public SafetyFaker(LocationRepository locationRepository) {
-        this(locationRepository, false);
+    public SafetyFaker(SiteRepository siteRepository) {
+        this(siteRepository, false);
     }
 
     /**
@@ -40,9 +46,9 @@ public class SafetyFaker extends Faker {
      *                     produced by this class. This will mainly be used during testing to see if the character
      *                     encoding of all the request and responses stay consistent
      */
-    public SafetyFaker(LocationRepository locationRepository, boolean testEncoding) {
+    public SafetyFaker(SiteRepository siteRepository, boolean testEncoding) {
         super(RANDOM);
-        this.locationRepository = locationRepository;
+        this.siteRepository = siteRepository;
         this.testEncoding = testEncoding;
     }
 
@@ -74,14 +80,14 @@ public class SafetyFaker extends Faker {
     public Instant between(Instant startInclusive, Instant endExclusive) {
         long min = startInclusive.getEpochSecond();
         long max = endExclusive.getEpochSecond();
-        return Instant.ofEpochSecond((random().nextLong() % (max - min)) + min);
+        return Instant.ofEpochSecond(min + random().nextInt((int) (max - min)));
     }
 
-    private <T> T choose(T[] choices) {
+    public <T> T choose(T[] choices) {
         return choices[RANDOM.nextInt(choices.length)];
     }
 
-    private <T> T choose(Collection<T> choices) {
+    public <T> T choose(Collection<T> choices) {
         return choices.stream()
                 .skip(RANDOM.nextInt(choices.size()))
                 .findFirst().get();
@@ -157,12 +163,12 @@ public class SafetyFaker extends Faker {
                 .setActivated(true);
     }
 
-    public Observation createObservation(User observer, Location location, Category category) {
+    public Observation createObservation(User observer, Company company, Site site, Category category) {
         return new Observation()
                 .setObserver(observer)
-                .setObservedAt(between(Instant.now().minus(Duration.ofDays(365L)), Instant.now()).atZone(ZoneId.systemDefault()))
-                .setLocation(location)
-                .setObservedCompany(company().name())
+                .setObservedAt(between(Instant.ofEpochSecond(1641001509), Instant.now()).atZone(ZoneId.systemDefault()))
+                .setSite(site)
+                .setObservedCompany(company)
                 .setImmediateDanger(bool().bool())
                 .setCategory(category)
                 .setDescription(gameOfThrones().quote())
@@ -171,12 +177,14 @@ public class SafetyFaker extends Faker {
                 .setStatus(choose(OBSERVATION_STATUSES));
     }
 
-    public List<Observation> createObservations(List<User> observers, List<Location> locations,
+    public List<Observation> createObservations(List<User> observers,
+                                                List<Company> companies,
+                                                List<Site> sites,
                                                 List<Category> categories, int n) {
         List<Observation> observations = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             observations.add(createObservation(
-                    choose(observers), choose(locations), choose(categories)
+                    choose(observers), choose(companies), choose(sites), choose(categories)
             ));
         }
         return observations;
@@ -195,17 +203,33 @@ public class SafetyFaker extends Faker {
                 .setZipCode(addressFaker.zipCode());
     }
 
-    public List<Location> createLocations() {
-        return new ArrayList<>(createMany(this::createLocation));
+    public List<Company> createCompanies() {
+        return new ArrayList<>(createMany(this::createCompany, 8 , 12));
     }
 
-    public Location createLocation() {
-        String name = witcher().location();
-        Location location = new Location().setName(name);
-        if (locationRepository != null) {
-            location = locationRepository.save(location);
+    public List<Site> createSites() {
+        return new ArrayList<>(createMany(this::createSite));
+    }
+
+    public Company createCompany() {
+        String name = company().name();
+        Company company = new Company().setName(name);
+        if (companyRepository != null) {
+            company = companyRepository.save(company);
         }
-        return location;
+        return company;
+    }
+
+    public Site createSite(String name) {
+        Site site = new Site().setName(name);
+        if (siteRepository != null) {
+            site = siteRepository.save(site);
+        }
+        return site;
+    }
+
+    public Site createSite() {
+        return createSite(witcher().location());
     }
 
 

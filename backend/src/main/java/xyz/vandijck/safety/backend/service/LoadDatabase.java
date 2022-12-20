@@ -17,14 +17,19 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import xyz.vandijck.safety.backend.SafetyFaker;
 import xyz.vandijck.safety.backend.entity.*;
+import xyz.vandijck.safety.backend.entity.common.Status;
 import xyz.vandijck.safety.backend.repository.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Configuration
 @Slf4j
@@ -35,7 +40,7 @@ class LoadDatabase {
     private Environment environment;
 
     @Autowired
-    private ConsequenceRepository consequenceRepository;
+    private ReoccurrenceRepository reoccurrenceRepository;
 
     @Autowired
     private SeverityRepository severityRepository;
@@ -47,7 +52,19 @@ class LoadDatabase {
     private UserRepository userRepository;
 
     @Autowired
-    private LocationRepository locationRepository;
+    private CompanyRepository companyRepository;
+
+    @Autowired
+    private CompanyService companyService;
+
+    @Autowired
+    private TypeRepository typeRepository;
+
+    @Autowired
+    private TypeService typeService;
+
+    @Autowired
+    private SiteRepository siteRepository;
 
     @Autowired
     private ObservationRepository observationRepository;
@@ -73,34 +90,84 @@ class LoadDatabase {
     }
 
     @Data
-    static class CSVConsequence extends CSVEntry<Consequence> {
+    static class CSVReoccurrence extends CSVEntry<Reoccurrence> {
         private String name;
-        private double probability;
+        private double rate;
         private String description;
 
 
-        public Consequence toObject() {
-            return new Consequence()
+        public Reoccurrence toObject() {
+            return new Reoccurrence()
                     .setName(name)
-                    .setProbability(probability)
+                    .setRate(rate)
                     .setDescription(description);
+        }
+    }
+
+    @Data
+    static class CSVType extends CSVEntry<Type> {
+        private String name;
+        private boolean notify;
+
+
+        public Type toObject() {
+            return new Type()
+                    .setName(name)
+                    .setNotify(notify);
         }
     }
 
     @Data
     static class CSVCategory extends CSVEntry<Category> {
         private String name;
-        private Long consequence;
-        private Long severity;
+        private Long reoccurrence;
+        private Double severity;
         private String description;
 
 
         public Category toObject() {
             return new Category()
                     .setName(name)
-                    .setConsequence(consequence != null ? new Consequence().setId(consequence) : null)
-                    .setSeverity(severity != null ? new Severity().setId(severity) : null)
+                    .setReoccurrence(reoccurrence != null ? new Reoccurrence().setId(reoccurrence) : null)
+                    .setSeverityLevel(severity)
                     .setDescription(description);
+        }
+    }
+
+    @Data
+    static class CSVObservation extends CSVEntry<Observation> {
+        private String observer;
+        private String observedAt;
+        private String observedCompany;
+        private String category;
+
+        private String type;
+
+        private String description;
+        private String actionsTaken;
+        private String furtherActions;
+        private String status;
+
+        private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        private static final Map<String, Status> STATUS = new HashMap<>();
+        static {
+            STATUS.put("Open", Status.NEW);
+            STATUS.put("Closed", Status.DONE);
+        }
+
+
+        public Observation toObject() {
+            LocalDate date = LocalDate.parse(observedAt, DateTimeFormatter.ofPattern("d/MM/yyyy"));
+            return new Observation()
+                    .setObservedAt(ZonedDateTime.of(date.atStartOfDay(), ZoneId.systemDefault()))
+                    .setObservedCompany(new Company().setName(observedCompany.isBlank() ? "Unknown" : observedCompany))
+                    .setType(new Type().setName(type))
+                    .setCategory(new Category().setId(ALPHABET.indexOf(category) + 1))
+                    .setDescription(description)
+                    .setActionsTaken(actionsTaken)
+                    .setFurtherActions(furtherActions)
+                    .setStatus(STATUS.getOrDefault(status, Status.IN_PROGRESS));
         }
     }
 
@@ -108,28 +175,37 @@ class LoadDatabase {
 
         List<User> mockUsers = new ArrayList<>();
         User admin = faker.createUser()
-                .setFirstName("Miss")
-                .setLastName("Moneypenny")
-                .setEmail("admin@example.com")
-                .setPassword(encoder.encode("admin"))
+                .setFirstName(faker.name().firstName())
+                .setLastName(faker.name().lastName())
+                .setEmail("admin@dasy.app")
+                .setPassword(encoder.encode("dasyadmin"))
                 .setRole(Role.ADMIN);
         mockUsers.add(admin);
 
         User editor = faker.createUser()
-                .setFirstName("Coach")
-                .setLastName("K")
-                .setEmail("editor@example.com")
-                .setPassword(encoder.encode("editor"))
+                .setFirstName(faker.name().firstName())
+                .setLastName(faker.name().lastName())
+                .setEmail("editor@dasy.app")
+                .setPassword(encoder.encode("dasyeditor"))
                 .setRole(Role.EDITOR);
         mockUsers.add(editor);
 
         User reader = faker.createUser()
-                .setFirstName("John")
-                .setLastName("Doe")
-                .setEmail("user@example.com")
-                .setPassword(encoder.encode("reader"))
+                .setFirstName(faker.name().firstName())
+                .setLastName(faker.name().lastName())
+                .setEmail("reader@dasy.app")
+                .setPassword(encoder.encode("dasyreader"))
                 .setRole(Role.READER);
         mockUsers.add(reader);
+
+        User demo = faker.createUser()
+                .setFirstName(faker.name().firstName())
+                .setLastName(faker.name().lastName())
+                .setEmail("demo@dasy.app")
+                .setPassword(encoder.encode("demo"))
+                .setRole(Role.ADMIN);
+        mockUsers.add(demo);
+
 
         return mockUsers;
     }
@@ -138,7 +214,7 @@ class LoadDatabase {
     CommandLineRunner initDatabase(PasswordEncoder passwordEncoder) {
         if (userRepository.count() > 0) return args -> {};
 
-        SafetyFaker faker = new SafetyFaker(locationRepository, false);
+        SafetyFaker faker = new SafetyFaker(siteRepository, false);
 
         // uncomment this to have a fresh database with only the existing dojos
         // be wary of the mock users that should be removed when running the application with real users
@@ -180,36 +256,65 @@ class LoadDatabase {
         return args -> {
             log.info("Starting database seeding for development");
 
-            List<Location> locations = faker.createLocations();
+            List<Site> sites = Stream.of("Molecule switch", "Pontus", "HDS", "P2C", "Unity", "Pfizer", "GSK")
+                    .map(s -> siteRepository.save(new Site().setName(s))).collect(Collectors.toList());
+
+            List<Type> types = loadCSV("data/types.csv", CSVType.class);
 
             List<Severity> severities = loadCSV("data/severities.csv", CSVSeverity.class);
 
-            List<Consequence> consequences = loadCSV("data/consequences.csv", CSVConsequence.class);
+            List<Reoccurrence> reoccurrences = loadCSV("data/reoccurrences.csv", CSVReoccurrence.class);
 
             List<Category> categories = loadCSV("data/categories.csv", CSVCategory.class);
             categories.forEach(category -> {
                 if (category.getSeverity() == null)
-                    category.setSeverity(severities.get(faker.number().numberBetween(0, severities.size())));
-                if (category.getConsequence() == null)
-                    category.setConsequence(consequences.get(faker.number().numberBetween(0, consequences.size())));
+                    category.setSeverity(faker.choose(severities));
+                if (category.getReoccurrence() == null)
+                    category.setReoccurrence(faker.choose(reoccurrences));
             });
 
             List<User> users = getMockUsers(faker, passwordEncoder);
 
-            List<Observation> observations = faker.createObservations(users, locations, categories, 100);
+//            List<Observation> observations = faker.createObservations(users, companies, sites, categories, 100);
+
+            List<Observation> observations = loadCSV("data/observations.csv", CSVObservation.class, ";");
+            observations.forEach(observation -> {
+                observation
+                        .setObserver(faker.choose(users))
+                        .setSite(faker.choose(sites))
+                        .setImmediateDanger(faker.bool().bool());
+            });
+
+            List<Company> companies = observations.stream().map(Observation::getObservedCompany).toList();
+
+            log.info("saving companies " + companies.size());
+            companies.forEach(company -> companyService.findElseCreate(company.getName()));
+            companyRepository.flush();
+            log.info("saving types " + types.size());
+            typeRepository.saveAll(types);
+            typeRepository.flush();
+
+            observations.forEach(observation ->
+                    observation.setObservedCompany(companyRepository.findByName(observation.getObservedCompany().getName())));
+
+            observations.forEach(observation ->
+                    observation.setType(typeRepository.findByName(observation.getType().getName())));
+
+            users.forEach(user ->
+                    user.setCompany(faker.choose(companyRepository.findAll())));
 
             log.info("saving users " + users.size());
             userRepository.saveAll(users);
             userRepository.flush();
-            log.info("saving locations " + locations.size());
-            locationRepository.saveAll(locations);
-            locationRepository.flush();
+            log.info("saving sites " + sites.size());
+            siteRepository.saveAll(sites);
+            siteRepository.flush();
             log.info("saving severities " + severities.size());
             severityRepository.saveAll(severities);
             severityRepository.flush();
-            log.info("saving consequences " + consequences.size());
-            consequenceRepository.saveAll(consequences);
-            consequenceRepository.flush();
+            log.info("saving reoccurrences " + reoccurrences.size());
+            reoccurrenceRepository.saveAll(reoccurrences);
+            reoccurrenceRepository.flush();
             log.info("saving categories " + categories.size());
             categoryRepository.saveAll(categories);
             categoryRepository.flush();
@@ -222,12 +327,16 @@ class LoadDatabase {
     }
 
     private <T, G extends CSVEntry<T>> List<T> loadCSV(String fileName, Class<G> csvClass) {
+        return loadCSV(fileName, csvClass, ",");
+    }
+
+    private <T, G extends CSVEntry<T>> List<T> loadCSV(String fileName, Class<G> csvClass, String separator) {
         try {
             List<T> ret = new ArrayList<>();
 
             // Setup CSV reader
             CsvMapper csvMapper = new CsvMapper();
-            CsvSchema schema = CsvSchema.emptySchema().withHeader();
+            CsvSchema schema = CsvSchema.emptySchema().withHeader().withColumnSeparator(separator.charAt(0));
             ObjectReader oReader = csvMapper.readerWithSchemaFor(csvClass).with(schema);
 
             // Read the files

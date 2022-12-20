@@ -1,0 +1,8 @@
+name,notify
+Positive Observation,false
+Negative Observation,false
+Recordable Incident,true
+First Aid,true
+Near Miss,true
+Other type of Incident,true
+LSR,true

@@ -1,0 +1,8 @@
+name,rate,description
+Permanently,10,
+Frequently (daily),6,
+Occasionally (weekly),3,
+Unusual (monthly),2,
+Rare (quarterly),1,
+Very rare (yearly),0.5,
+Never,0,

@@ -1,7 +1,7 @@
 name,level,description
-"Catastrofe, ramp (groot aantal doden)",100,
-Ongeval met klein aantal doden,40,
-Dodelijk ongeval (één dode),15,
-Zeer ernstig (zware letsels en/of blijvende ongeschiktheid),7,
-Ernstig (tijdelijke ongeschiktheid),3,
-Licht (met EHBO of medische verzorging),1,
+"Catastrophe, disaster (large number of deaths)",100,
+Accident with small number of fatalities,40,
+Fatal accident (one fatality),15,
+Very serious (serious injuries and/or permanent disability),7,
+Severe (temporary incapacity),3,
+Light (with first aid or medical care),1,
