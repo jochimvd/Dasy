@@ -6,19 +6,6 @@ import AuthService from "../services/AuthService";
 import { clickOutside } from "../utils/Directives";
 import { BellOutline, MenuOutline, PlusS, XOutline } from "../utils/Icons";
 
-const navigation = [
-  { name: "Observations", href: "/observations" },
-  { name: "Board", href: "/board" },
-  { name: "Reports", href: "/reports" },
-  { name: "Configuration", href: "/configuration" },
-];
-
-const userNavigation = [
-  { name: "Account settings", href: "/users/me" },
-  { name: "Support", href: "/support" },
-  { name: "License", href: "/license" },
-];
-
 const formatUserInitials = (user?: UserDto) => {
   if (!user) return "UU";
   return (
@@ -50,6 +37,18 @@ const NavBar = () => {
       setMobileNavMenu(false);
     }
   });
+
+  const navigation = [
+    { name: "Observations", href: "/observations" },
+    { name: "Board", href: "/board" },
+    { name: "Reports", href: "/reports" },
+    { name: "Configuration", href: "/configuration" },
+  ];
+
+  const userNavigation = [
+    { name: "Account settings", href: "/users/me" },
+    { name: "Support", href: "/support" },
+  ];
 
   return (
     <>
@@ -88,7 +87,7 @@ const NavBar = () => {
                     class="inline-flex items-center justify-center w-8 h-8"
                     href="/"
                   >
-                    <img src="/images/logo.png" alt="Safety Logo" />
+                    <img src="/images/logo.png" alt="DASY Logo" />
                   </A>
                 </div>
                 <div class="hidden md:ml-6 md:flex md:space-x-8">
