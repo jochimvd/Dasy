@@ -1,6 +1,7 @@
+import { A, Navigate, useSearchParams } from "@solidjs/router";
+import { HTTPError } from "ky";
 import { Component, createSignal, Show } from "solid-js";
-import { Navigate, useSearchParams } from "@solidjs/router";
-import { createStore } from "solid-js/store";
+import { createStore, reconcile } from "solid-js/store";
 import { useService } from "solid-services";
 import AuthService, { LoginInput } from "../../services/AuthService";
 
@@ -9,14 +10,41 @@ const Login: Component = () => {
   const [search] = useSearchParams();
 
   const [loading, setLoading] = createSignal(false);
-  const [error, setError] = createSignal(false);
+  const [errors, setErrors] = createStore({} as Record<string, string>);
   const [credentials, setCredentials] = createStore({} as LoginInput);
 
-  const submitForm = (e: Event) => {
+  const submitForm = async (e: Event) => {
     e.preventDefault();
     setLoading(true);
 
-    auth().login({ email: credentials.email, password: credentials.password });
+    setErrors(reconcile({}));
+
+    if (!credentials.email) {
+      setErrors({ email: "Please fill in your email." });
+    }
+
+    if (!credentials.password) {
+      setErrors({ password: "Please fill in your password." });
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await auth().login({
+        email: credentials.email,
+        password: credentials.password,
+      });
+    } catch (err: any) {
+      if (err instanceof HTTPError) {
+        const res = await err.response.json();
+        setErrors({ general: "Invalid credentials. Please try again." });
+      }
+
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,7 +58,7 @@ const Login: Component = () => {
             <img
               class="mx-auto h-12 w-auto"
               src="/images/logo.png"
-              alt="Safety Logo"
+              alt="DASY Logo"
             />
             <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
               Sign in to your account
@@ -55,10 +83,18 @@ const Login: Component = () => {
                       autocomplete="email"
                       required
                       class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                      classList={{
+                        "border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500":
+                          !!errors.email,
+                      }}
                       onInput={(e) => {
+                        setErrors({ email: undefined });
                         setCredentials({ email: e.currentTarget.value });
                       }}
                     />
+                    <Show when={errors.email}>
+                      <p class="mt-2 text-sm text-red-600">{errors.email}</p>
+                    </Show>
                   </div>
                 </div>
 
@@ -77,13 +113,24 @@ const Login: Component = () => {
                       autocomplete="current-password"
                       required
                       class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                      classList={{
+                        "border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500":
+                          !!errors.password,
+                      }}
                       onInput={(e) => {
-                        setError(false);
+                        setErrors({ password: undefined });
                         setCredentials({ password: e.currentTarget.value });
                       }}
                     />
+                    <Show when={errors.password}>
+                      <p class="mt-2 text-sm text-red-600">{errors.password}</p>
+                    </Show>
                   </div>
                 </div>
+
+                <Show when={errors.general}>
+                  <p class="mt-2 text-sm text-red-600">{errors.general}</p>
+                </Show>
 
                 <div class="flex items-center justify-between">
                   <div class="flex items-center">
@@ -93,7 +140,6 @@ const Login: Component = () => {
                       type="checkbox"
                       class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
                       onInput={(e) => {
-                        setError(false);
                         setCredentials({ rememberMe: e.currentTarget.checked });
                       }}
                     />
@@ -106,12 +152,12 @@ const Login: Component = () => {
                   </div>
 
                   <div class="text-sm">
-                    <a
-                      href="#"
+                    <A
+                      href="/login/reset-password"
                       class="font-medium text-orange-600 hover:text-orange-500"
                     >
                       Forgot your password?
-                    </a>
+                    </A>
                   </div>
                 </div>
 
@@ -120,7 +166,7 @@ const Login: Component = () => {
                     class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                     onClick={submitForm}
                   >
-                    {error() ? "Error" : loading() ? "Loading..." : "Sign in"}
+                    {loading() ? "Loading..." : "Sign in"}
                   </button>
                 </div>
               </form>
