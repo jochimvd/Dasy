@@ -11,7 +11,6 @@ import SeverityService from "./services/SeverityService";
 import TypeService from "./services/TypeService";
 
 const NavbarLayout = lazy(() => import("./layouts/NavbarLayout"));
-const Home = lazy(() => import("./pages/home/Home"));
 const Observations = lazy(() => import("./pages/observations/Observations"));
 const Observation = lazy(() => import("./pages/observations/Observation"));
 const ObservationEdit = lazy(
