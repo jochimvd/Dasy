@@ -1,21 +1,22 @@
 import { Link, useRouteData } from "@solidjs/router";
 import { Component, For } from "solid-js";
-import { ConsequencesData } from "../../../services/ConsequenceService";
+import { ReoccurrencesData } from "../../../services/ReoccurrenceService";
 
-const Consequences: Component = () => {
-  const [data] = useRouteData<ConsequencesData>();
-  const consequences = () => data()?._embedded?.consequences;
+const Reoccurrences: Component = () => {
+  const [data] = useRouteData<ReoccurrencesData>();
+  const reoccurrences = () =>
+    data()?._embedded?.reoccurrences.sort((a, b) => b.rate - a.rate);
 
   return (
     <>
-      <section aria-labelledby="consequences-heading">
+      <section aria-labelledby="reoccurrences-heading">
         <div class="bg-white pt-6 shadow sm:rounded-md sm:overflow-hidden">
           <div class="flex items-center justify-between px-4 sm:px-6">
             <h2
-              id="consequences-heading"
+              id="reoccurrences-heading"
               class="text-lg leading-6 font-medium text-gray-900"
             >
-              Consequences
+              Reoccurrences
             </h2>
 
             {data()?._links.post && (
@@ -23,7 +24,7 @@ const Consequences: Component = () => {
                 href="create"
                 class="inline-flex items-center px-2.5 py-1.5 border border-orange-600 shadow-sm text-xs font-medium rounded text-orange-600 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
               >
-                New Consequence
+                New Reoccurrence
               </Link>
             )}
           </div>
@@ -44,12 +45,12 @@ const Consequences: Component = () => {
                           scope="col"
                           class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
-                          Probability
+                          Rate
                         </th>
                         {/*
                           `relative` is added here due to a weird bug in Safari that causes `sr-only` headings to introduce overflow on the body on mobile.
                         */}
-                        {consequences()?.some((c) => c._links?.put) && (
+                        {reoccurrences()?.some((c) => c._links?.put) && (
                           <th
                             scope="col"
                             class="relative px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -61,23 +62,23 @@ const Consequences: Component = () => {
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                       <For
-                        each={consequences()}
+                        each={reoccurrences()}
                         fallback={<div>Loading...</div>}
                       >
-                        {(consequence) => (
+                        {(reoccurrence) => (
                           <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              <Link href={`${consequence.id}`}>
-                                {consequence.name}
+                              <Link href={`${reoccurrence.id}`}>
+                                {reoccurrence.name}
                               </Link>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {consequence.probability}
+                              {reoccurrence.rate}
                             </td>
-                            {consequence._links?.put && (
+                            {reoccurrence._links?.put && (
                               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <Link
-                                  href={consequence.id + "/edit"}
+                                  href={reoccurrence.id + "/edit"}
                                   class="text-orange-600 hover:text-orange-900"
                                 >
                                   Edit
@@ -99,4 +100,4 @@ const Consequences: Component = () => {
   );
 };
 
-export default Consequences;
+export default Reoccurrences;

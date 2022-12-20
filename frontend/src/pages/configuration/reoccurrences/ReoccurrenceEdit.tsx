@@ -2,20 +2,20 @@ import { useNavigate, useRouteData } from "@solidjs/router";
 import { createComputed, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import ConfigurationEditLayout from "../../../layouts/ConfigurationEditLayout";
-import { ConsequenceInput } from "../../../models/Consequence";
-import ConsequenceService, {
-  ConsequenceData,
-} from "../../../services/ConsequenceService";
+import { ReoccurrenceInput } from "../../../models/Reoccurrence";
+import ReoccurrenceService, {
+  ReoccurrenceData,
+} from "../../../services/ReoccurrenceService";
 
-const ConsequenceEdit = () => {
+const ReoccurrenceEdit = () => {
   const navigate = useNavigate();
 
-  const consequenceService = ConsequenceService();
-  const [data, { mutate }] = useRouteData<ConsequenceData>();
+  const reoccurrenceService = ReoccurrenceService();
+  const [data, { mutate }] = useRouteData<ReoccurrenceData>();
   const [saving, setSaving] = createSignal(false);
 
-  const [state, setState] = createStore<ConsequenceInput>({});
-  const updateState = (field: keyof ConsequenceInput) => (e: Event) =>
+  const [state, setState] = createStore<ReoccurrenceInput>({});
+  const updateState = (field: keyof ReoccurrenceInput) => (e: Event) =>
     setState(field, (e.target as HTMLInputElement).value);
 
   const submitForm = async (e: Event) => {
@@ -23,31 +23,29 @@ const ConsequenceEdit = () => {
     setSaving(true);
 
     try {
-      const consequence = await (data()?.id
-        ? consequenceService.updateConsequence
-        : consequenceService.createConsequence)(state);
+      const reoccurrence = await (data()?.id
+        ? reoccurrenceService.updateReoccurrence
+        : reoccurrenceService.createReoccurrence)(state);
 
-      mutate(consequence);
-      navigate("/configuration/consequences/" + consequence.id);
+      mutate(reoccurrence);
+      navigate("/configuration/reoccurrences/" + reoccurrence.id);
     } catch (e) {
       setSaving(false);
     }
   };
 
   createComputed(() => {
-    const consequence = data();
-    if (consequence && consequence.id) {
-      const { _links, ...rest } = consequence;
+    const reoccurrence = data();
+    if (reoccurrence && reoccurrence.id) {
+      const { _links, ...rest } = reoccurrence;
       setState(rest);
     }
   });
 
   return (
     <ConfigurationEditLayout
-      heading={"Consequence"}
-      subheading={
-        "Create a new consequence probability or edit an existing one."
-      }
+      heading={"Reoccurrence"}
+      subheading={"Create a new reoccurrence rate or edit an existing one."}
       saving={saving}
       onSubmit={submitForm}
     >
@@ -60,27 +58,22 @@ const ConsequenceEdit = () => {
             type="text"
             id="name"
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
-            placeholder="Consequence name"
+            placeholder="Reoccurrence name"
             value={state.name ?? ""}
             onInput={updateState("name")}
           />
         </div>
 
         <div class="col-span-4 sm:col-span-1">
-          <label
-            for="probability"
-            class="block text-sm font-medium text-gray-700"
-          >
-            Probability
+          <label for="rate" class="block text-sm font-medium text-gray-700">
+            Rate
           </label>
           <input
             type="number"
-            id="probability"
+            id="rate"
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
-            value={state.probability}
-            onInput={(e) =>
-              setState("probability", e.currentTarget.valueAsNumber)
-            }
+            value={state.rate}
+            onInput={(e) => setState("rate", e.currentTarget.valueAsNumber)}
           />
         </div>
       </div>
@@ -88,4 +81,4 @@ const ConsequenceEdit = () => {
   );
 };
 
-export default ConsequenceEdit;
+export default ReoccurrenceEdit;

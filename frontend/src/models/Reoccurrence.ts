@@ -1,14 +1,14 @@
 import { Links } from "../utils/utils";
 
-export type ConsequenceDto = {
+export type ReoccurrenceDto = {
   id: number;
   name: string;
-  probability: number;
+  rate: number;
   _links?: Links;
 };
 
-export type ConsequenceInput = {
+export type ReoccurrenceInput = {
   id?: number;
   name?: string;
-  probability?: number;
+  rate?: number;
 };
