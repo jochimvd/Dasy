@@ -4,10 +4,11 @@ import Loader from "./components/Loader";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import ErrorBoundaries from "./pages/errors/ErrorBoundaries";
 import CategoryService from "./services/CategoryService";
-import ConsequenceService from "./services/ConsequenceService";
-import LocationService from "./services/LocationService";
+import ReoccurrenceService from "./services/ReoccurrenceService";
+import SiteService from "./services/SiteService";
 import ObservationService from "./services/ObservationService";
 import SeverityService from "./services/SeverityService";
+import TypeService from "./services/TypeService";
 
 const NavbarLayout = lazy(() => import("./layouts/NavbarLayout"));
 const Home = lazy(() => import("./pages/home/Home"));
@@ -34,35 +35,37 @@ const Category = lazy(
 const CategoryEdit = lazy(
   () => import("./pages/configuration/categories/CategoryEdit")
 );
-const Consequences = lazy(
-  () => import("./pages/configuration/consequences/Consequences")
+const Reoccurrences = lazy(
+  () => import("./pages/configuration/reoccurrences/Reoccurrences")
 );
-const Consequence = lazy(
-  () => import("./pages/configuration/consequences/Consequence")
+const Reoccurrence = lazy(
+  () => import("./pages/configuration/reoccurrences/Reoccurrence")
 );
-const ConsequenceEdit = lazy(
-  () => import("./pages/configuration/consequences/ConsequenceEdit")
+const ReoccurrenceEdit = lazy(
+  () => import("./pages/configuration/reoccurrences/ReoccurrenceEdit")
 );
-const Locations = lazy(
-  () => import("./pages/configuration/locations/Locations")
-);
-const Location = lazy(() => import("./pages/configuration/locations/Location"));
-const LocationEdit = lazy(
-  () => import("./pages/configuration/locations/LocationEdit")
-);
+const Sites = lazy(() => import("./pages/configuration/sites/Sites"));
+const Site = lazy(() => import("./pages/configuration/sites/Site"));
+const SiteEdit = lazy(() => import("./pages/configuration/sites/SiteEdit"));
+const Types = lazy(() => import("./pages/configuration/types/Types"));
+const Type = lazy(() => import("./pages/configuration/types/Type"));
+const TypeEdit = lazy(() => import("./pages/configuration/types/TypeEdit"));
 
 const ConfigurationLayout = lazy(() => import("./layouts/ConfigurationLayout"));
 const General = lazy(() => import("./pages/configuration/General"));
 const Board = lazy(() => import("./pages/board/Board"));
+const Reports = lazy(() => import("./pages/reports/Reports"));
 const Login = lazy(() => import("./pages/users/Login"));
+const ResetPassword = lazy(() => import("./pages/users/ResetPassword"));
 const NotFoundPage = lazy(() => import("./pages/errors/NotFoundPage"));
 
 const App: Component = () => {
   const observationService = ObservationService();
-  const locationService = LocationService();
+  const siteService = SiteService();
   const severityService = SeverityService();
-  const consequenceService = ConsequenceService();
+  const reoccurrenceService = ReoccurrenceService();
   const categoryService = CategoryService();
+  const typeService = TypeService();
 
   return (
     <>
@@ -74,6 +77,7 @@ const App: Component = () => {
               <Route path="/" component={NavbarLayout}>
                 <Route path="/" element={<Navigate href={"/observations"} />} />
                 <Route path="/board" component={Board} />
+                <Route path="/reports" component={Reports} />
                 <Route path="/observations">
                   <Route
                     path="/"
@@ -108,23 +112,23 @@ const App: Component = () => {
                       data={categoryService.categoryData}
                     />
                   </Route>
-                  <Route path="/consequences">
+                  <Route path="/reoccurrences">
                     <Route
                       path="/"
-                      component={Consequences}
-                      data={consequenceService.consequencesData}
+                      component={Reoccurrences}
+                      data={reoccurrenceService.reoccurrencesData}
                     />
                     <Route
                       path="/:id"
-                      data={consequenceService.consequenceData}
+                      data={reoccurrenceService.reoccurrenceData}
                     >
-                      <Route path="/" component={Consequence} />
-                      <Route path="/edit" component={ConsequenceEdit} />
+                      <Route path="/" component={Reoccurrence} />
+                      <Route path="/edit" component={ReoccurrenceEdit} />
                     </Route>
                     <Route
                       path="/create"
-                      component={ConsequenceEdit}
-                      data={consequenceService.consequenceData}
+                      component={ReoccurrenceEdit}
+                      data={reoccurrenceService.reoccurrenceData}
                     />
                   </Route>
                   <Route path="/severities">
@@ -143,20 +147,36 @@ const App: Component = () => {
                       data={severityService.severityData}
                     />
                   </Route>
-                  <Route path="/locations">
+                  <Route path="/sites">
                     <Route
                       path="/"
-                      component={Locations}
-                      data={locationService.locationsData}
+                      component={Sites}
+                      data={siteService.sitesData}
                     />
-                    <Route path="/:id" data={locationService.locationData}>
-                      <Route path="/" component={Location} />
-                      <Route path="/edit" component={LocationEdit} />
+                    <Route path="/:id" data={siteService.siteData}>
+                      <Route path="/" component={Site} />
+                      <Route path="/edit" component={SiteEdit} />
                     </Route>
                     <Route
                       path="/create"
-                      component={LocationEdit}
-                      data={locationService.locationData}
+                      component={SiteEdit}
+                      data={siteService.siteData}
+                    />
+                  </Route>
+                  <Route path="/types">
+                    <Route
+                      path="/"
+                      component={Types}
+                      data={typeService.typesData}
+                    />
+                    <Route path="/:id" data={typeService.typeData}>
+                      <Route path="/" component={Type} />
+                      <Route path="/edit" component={TypeEdit} />
+                    </Route>
+                    <Route
+                      path="/create"
+                      component={TypeEdit}
+                      data={typeService.typeData}
                     />
                   </Route>
                 </Route>
@@ -164,6 +184,7 @@ const App: Component = () => {
             </ProtectedRoute>
 
             <Route path="/login" component={Login} />
+            <Route path="/login/reset-password" component={ResetPassword} />
             <Route path={["*any"]} component={NotFoundPage} />
           </Routes>
         </Suspense>
