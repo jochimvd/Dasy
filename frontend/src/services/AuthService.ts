@@ -56,6 +56,10 @@ const AuthService = () => {
 
           return tokens;
         })
+        .catch((err: any) => {
+          // If we can't refresh, error out
+          throw err;
+        })
         .finally(() => {
           // Reset refresh request promise
           refreshRequest = null;
@@ -124,11 +128,7 @@ const AuthService = () => {
     try {
       return await api(url, options).json<T>();
     } catch (err: any) {
-      if (err instanceof HTTPError) {
-        console.error("request failed: ", await err.response.json());
-      } else {
-        console.error("request failed: ", err);
-      }
+      console.error("request failed: ", err);
 
       throw err;
     }
@@ -146,9 +146,11 @@ const AuthService = () => {
   const Auth = {
     login: (loginInput: LoginInput) =>
       send<LoginResponse>("POST", "users/login", loginInput),
-    logout: () => {
-      throw new Error("Not implemented");
-    },
+    logout: () =>
+      ky(`${API_ROOT}/users/logout`, {
+        method: "POST",
+        json: { refreshToken: session.refreshToken },
+      }),
   };
 
   const service = {
@@ -163,6 +165,7 @@ const AuthService = () => {
       doLogin(loginResponse);
     },
     logout() {
+      Auth.logout();
       batch(() => {
         mutate(undefined);
         setSession({
