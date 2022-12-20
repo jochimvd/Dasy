@@ -1,12 +1,21 @@
 import { useNavigate, useRouteData } from "@solidjs/router";
-import { Component, createComputed, createSignal } from "solid-js";
-import { createStore } from "solid-js/store";
+import {
+  Component,
+  createComputed,
+  createEffect,
+  createSignal,
+  Show,
+} from "solid-js";
+import { createStore, reconcile } from "solid-js/store";
+import SuggestCompany from "../../components/SuggestCompany";
 import SelectCategory from "../../components/SelectCategory";
-import SelectLocation from "../../components/SelectLocation";
+import SelectSite from "../../components/SelectSite";
 import { ObservationInput } from "../../models/Observation";
 import ObservationService, {
   ObservationData,
 } from "../../services/ObservationService";
+import SelectType from "../../components/SelectType";
+import SuggestSite from "../../components/SuggestSite";
 
 function toLocalIsoString(date: Date) {
   const tzo = -date.getTimezoneOffset();
@@ -40,6 +49,7 @@ export const ObservationEdit: Component = () => {
   const observationService = ObservationService();
   const [data, { mutate }] = useRouteData<ObservationData>();
   const [saving, setSaving] = createSignal(false);
+  const [errors, setErrors] = createStore({} as Record<string, string>);
 
   const [state, setState] = createStore<ObservationInput>({});
   const updateState = (field: keyof ObservationInput) => (e: Event) =>
@@ -48,6 +58,29 @@ export const ObservationEdit: Component = () => {
   const submitForm = async (e: Event) => {
     e.preventDefault();
     setSaving(true);
+
+    setErrors(reconcile({}));
+
+    if (!state.observedCompany) {
+      setErrors({ observedCompany: "Please fill in the observed company." });
+    }
+
+    if (!state.category) {
+      setErrors({ category: "Please fill in the category." });
+    }
+
+    if (!state.site) {
+      setErrors({ site: "Please fill in the site." });
+    }
+
+    if (!state.description) {
+      setErrors({ description: "Please fill in the description." });
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setSaving(false);
+      return;
+    }
 
     try {
       const observation = await (data()?.id
@@ -69,21 +102,39 @@ export const ObservationEdit: Component = () => {
     }
   });
 
-  // Initialize autofilled observedAt field
   createComputed(() => {
-    if (!state.observedAt) {
+    // Initialize autofilled observedAt field
+    if (state.observedAt === undefined) {
       setState("observedAt", toLocalIsoString(new Date()));
+    }
+    if (state.type === undefined) {
+      setState("type", { id: 2 });
+    }
+    if (state.immediateDanger === undefined) {
+      setState("immediateDanger", false);
+    }
+  });
+
+  const [dangerEnabled, setDangerEnabled] = createSignal(true);
+
+  createEffect(() => {
+    // check for positive observation type
+    if (state.type?.id === 1) {
+      setDangerEnabled(false);
+      setState("immediateDanger", false);
+    } else {
+      setDangerEnabled(true);
     }
   });
 
   return (
     <>
-      <form>
+      <form autocomplete="off">
         <div class="shadow sm:rounded-md sm:overflow-hidden">
           <div class="bg-white py-6 px-4 sm:p-6">
             <div>
               <h2
-                id="location-heading"
+                id="observation-heading"
                 class="text-lg leading-6 font-medium text-gray-900"
               >
                 Observation
@@ -123,36 +174,50 @@ export const ObservationEdit: Component = () => {
                 />
               </div>
 
-              <div class="col-span-4 sm:col-span-2">
-                <label
-                  for="observed-company"
-                  class="block text-sm font-medium text-gray-700"
-                >
-                  Observed company
-                </label>
-                <input
-                  type="text"
-                  id="observed-company"
-                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
-                  placeholder="Observed company"
-                  value={state.observedCompany ?? ""}
-                  onInput={updateState("observedCompany")}
-                />
-              </div>
+              <SuggestCompany
+                id="observedCompany"
+                wrapperClass="col-span-4 sm:col-span-2"
+                value={state.observedCompany}
+                setValue={(value) => {
+                  setErrors({ observedCompany: undefined });
+                  setState("observedCompany", value);
+                }}
+                error={errors.observedCompany}
+              />
 
-              <div class="col-span-4 sm:col-span-2">
-                <SelectLocation
-                  value={state.location?.id}
-                  setLocation={(id) => setState("location", { id: id })}
-                />
-              </div>
+              <SelectCategory
+                value={state.category?.id}
+                wrapperClass="col-span-4 sm:col-span-2"
+                setCategory={(id) => {
+                  setErrors({ category: undefined });
+                  Number.isNaN(id)
+                    ? setState("category", undefined)
+                    : setState("category", { id: id });
+                }}
+                error={errors.category}
+              />
 
-              <div class="col-span-4 sm:col-span-2">
-                <SelectCategory
-                  value={state.category?.id}
-                  setCategory={(id) => setState("category", { id: id })}
-                />
-              </div>
+              <SuggestSite
+                id="site"
+                wrapperClass="col-span-4 sm:col-span-2"
+                value={state.site}
+                setValue={(value) => {
+                  setErrors({ site: undefined });
+                  setState("site", value);
+                }}
+                error={errors.site}
+              />
+
+              <SelectType
+                wrapperClass="col-span-4 sm:col-span-2"
+                value={state.type?.id}
+                setType={(id) => {
+                  setErrors({ type: undefined });
+                  Number.isNaN(id)
+                    ? setState("type", undefined)
+                    : setState("type", { id: id });
+                }}
+              />
 
               <div class="col-span-4 sm:col-span-2">
                 <label for="immediate-danger">
@@ -165,14 +230,16 @@ export const ObservationEdit: Component = () => {
                     classList={{
                       "bg-orange-500": state.immediateDanger,
                       "bg-gray-200": !state.immediateDanger,
+                      "hover:cursor-not-allowed": !dangerEnabled(),
                     }}
-                    class="mt-1 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors ease-in-out duration-200"
+                    class="mt-3 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors ease-in-out duration-200"
                     role="switch"
                     aria-checked={state.immediateDanger}
                     aria-labelledby="immediate-danger"
                     onClick={() =>
                       setState("immediateDanger", !state.immediateDanger)
                     }
+                    disabled={!dangerEnabled()}
                   >
                     <span
                       aria-hidden="true"
@@ -198,10 +265,20 @@ export const ObservationEdit: Component = () => {
                   rows={3}
                   id="description"
                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
+                  classList={{
+                    "border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500":
+                      !!errors.description,
+                  }}
                   placeholder="Describe the observation"
                   value={state.description ?? ""}
-                  onInput={updateState("description")}
+                  onInput={(e) => {
+                    setErrors({ description: undefined });
+                    updateState("description")(e);
+                  }}
                 />
+                <Show when={errors.description}>
+                  <p class="mt-2 text-sm text-red-600">{errors.description}</p>
+                </Show>
               </div>
 
               <div class="col-span-4">
