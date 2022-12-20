@@ -1,27 +1,31 @@
 import { useIsRouting } from "@solidjs/router";
 import { Component, createEffect, createSignal } from "solid-js";
 
-export const [isLoading, setIsLoading] = createSignal(false);
+const [isLoading, setIsLoading] = createSignal(false);
+export const loadingIndicator = (isLoading: boolean) => setIsLoading(isLoading);
 
 const Loader: Component = () => {
   let timeoutId: number;
   const isRouting = useIsRouting();
+  const [loadingIndicator, setLoadingIndicator] = createSignal(false);
 
   createEffect(() => {
-    if (isRouting()) {
+    const loading = isRouting() || isLoading();
+
+    if (loading) {
       timeoutId = setTimeout(() => {
-        setIsLoading(isRouting());
+        setLoadingIndicator(loading);
       }, 200);
     } else {
       clearTimeout(timeoutId);
-      setIsLoading(isRouting());
+      setLoadingIndicator(loading);
     }
   });
 
   return (
     <div
       class="loader"
-      classList={{ active: isLoading(), inactive: !isLoading() }}
+      classList={{ active: loadingIndicator(), inactive: !loadingIndicator() }}
     />
   );
 };

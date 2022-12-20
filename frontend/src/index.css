@@ -45,9 +45,9 @@ html {
     background-position-x: 100%;
   }
   50% {
-    background-position-x: 5%;
+    background-position-x: 15%;
   }
   100% {
-    background-position-x: 0%;
+    background-position-x: 5%;
   }
 }
