@@ -15,6 +15,7 @@ import xyz.vandijck.safety.backend.dto.UserDto;
 import xyz.vandijck.safety.backend.entity.User;
 import xyz.vandijck.safety.backend.policy.UserPolicy;
 import xyz.vandijck.safety.backend.request.*;
+import xyz.vandijck.safety.backend.service.CompanyService;
 import xyz.vandijck.safety.backend.service.UserService;
 
 import java.util.Map;
@@ -32,11 +33,15 @@ import static xyz.vandijck.safety.backend.assembler.link.GuardedLink.guard;
 public class UserAssembler extends BaseAssembler<User, UserDto> {
     protected final UserPolicy userPolicy;
 
+    private final CompanyService companyService;
+
     @Autowired
     public UserAssembler(UserPolicy userPolicy, UserService userService,
+                         CompanyService companyService,
                          ObjectMapper objectMapper,ModelMapper modelMapper) {
         super(userPolicy, UserDto.class, userService, objectMapper, modelMapper);
         this.userPolicy = userPolicy;
+        this.companyService = companyService;
     }
 
     @Override
@@ -94,11 +99,15 @@ public class UserAssembler extends BaseAssembler<User, UserDto> {
 
     @Override
     public UserDto convertToDto(User entity) {
-        return modelMapper.map(entity, UserDto.class);
+        UserDto userDto = modelMapper.map(entity, UserDto.class);
+        userDto.setCompany(entity.getCompany().getName());
+        return userDto;
     }
 
     @Override
     public User convertToEntity(UserDto dto) {
-        return modelMapper.map(dto, User.class);
+        User user = modelMapper.map(dto, User.class);
+        user.setCompany(companyService.findElseCreate(dto.getCompany()));
+        return user;
     }
 }

@@ -1,5 +1,6 @@
 package xyz.vandijck.safety.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
@@ -69,6 +70,12 @@ public class User implements UserDetails, UniqueEntity, Archivable {
     @IndexedEmbedded
     @Embedded
     private Address address;
+
+    @IndexedEmbedded
+    @JsonBackReference("companyUserReference")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
+    private Company company;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Field(analyze = Analyze.NO, store = Store.YES)

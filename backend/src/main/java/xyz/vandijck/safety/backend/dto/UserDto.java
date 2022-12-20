@@ -37,6 +37,10 @@ public class UserDto implements UniqueEntity {
     @Email(message = "emailInvalid")
     private String email;
 
+    @JsonView({Views.Editor.class, Views.Personal.class})
+    @NotBlank(message = "isEmpty")
+    private String company;
+
     @JsonView({Views.Admin.class, Views.Personal.class})
 //    @NotNull(message = "isEmpty")
     private AddressDto address;
