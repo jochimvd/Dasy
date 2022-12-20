@@ -8,8 +8,8 @@ const SearchFilter = () => {
   let columnButton;
   false && clickOutside; // See: https://github.com/solidjs/solid/issues/1005
 
-  let timer = 0;
-  const waitTime = 500; // Wait time in milliseconds
+  let timer: number;
+  const waitTime = 400; // Wait time in milliseconds
 
   const [searchParams, setSearchParams] =
     useSearchParams<ObservationSearchParams>();
@@ -18,21 +18,18 @@ const SearchFilter = () => {
   const [value, setValue] = createSignal(searchParams.search || "");
   const [flyout, setFlyout] = createSignal(false);
 
-  const searchFilters = [
+  const searchFilters: { label: string; key: string }[] = [
     { label: "All", key: "search" },
+    { label: "Site", key: "siteName" },
     { label: "Observer", key: "observerName" },
     { label: "Category", key: "categoryName" },
-    { label: "Location", key: "locationName" },
-    { label: "Observed Company", key: "observedCompany" },
+    { label: "Observed Company", key: "observedCompanyName" },
   ];
 
-  const emptyParams = {
-    search: "",
-    observerName: "",
-    categoryName: "",
-    locationName: "",
-    observedCompany: "",
-  };
+  const emptyParams = searchFilters.reduce((acc, { key }) => {
+    acc[key] = "";
+    return acc;
+  }, {} as { [key: string]: string });
 
   const clearFilters = () => {
     setSearchParams(emptyParams);

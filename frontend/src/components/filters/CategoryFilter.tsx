@@ -9,7 +9,8 @@ type CategoryFilterProps = {
 
 const CategoryFilter = (props: CategoryFilterProps) => {
   const [data] = CategoryService().categoriesData();
-  const categories = () => data()?._embedded?.categories;
+  const categories = () =>
+    data()?._embedded?.categories.sort((a, b) => a.name.localeCompare(b.name));
 
   const [filter, setFilter] = createSignal<number[]>(props.filter ?? []);
   const [show, setShow] = createSignal(false);
