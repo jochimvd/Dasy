@@ -283,7 +283,7 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", user.getFullName());
         variables.put("url", url);
-        mailService.send("Safety App account", request.getEmail(), "password-reset", variables);
+        mailService.send("DASY App account", request.getEmail(), "password-reset", variables);
     }
 
     @Override
@@ -319,7 +319,7 @@ public class UserServiceImpl implements UserService {
             Map<String, String> parameters = Map.of("email", user.getEmail());
             String url = URLService.generateSigned("activate", activationTime, parameters);
             Map<String, Object> variables = Map.of("name", user.getFullName(), "url", url);
-            mailService.send("Safety App account", user.getEmail(), "activate", variables);
+            mailService.send("DASY App account", user.getEmail(), "activate", variables);
         }
 
         // Create user account
@@ -400,7 +400,7 @@ public class UserServiceImpl implements UserService {
         refreshTokenRepository.deleteByTokenNotAndUser(hashBase64Token(request.getRefreshToken()), user);
 
         Map<String, Object> variables = Map.of("name", user.getFullName());
-        mailService.send("Safety App password change", user.getEmail(), "password-update", variables);
+        mailService.send("DASY App password change", user.getEmail(), "password-update", variables);
     }
 
     @Override
@@ -424,13 +424,13 @@ public class UserServiceImpl implements UserService {
 
         // Email to old email address
         Map<String, Object> variables = Map.of("name", user.getFullName(), "email", request.getNewEmail());
-        mailService.send("Safety App email change", user.getEmail(), "email-change-old", variables);
+        mailService.send("DASY App email change", user.getEmail(), "email-change-old", variables);
 
         // Email to new email address
         Map<String, String> parameters = Map.of("email", user.getEmail(), "newEmail", request.getNewEmail());
         String url = URLService.generateSigned("activate", activationTime, parameters);
         variables = Map.of("name", user.getFullName(), "email", request.getNewEmail(), "url", url);
-        mailService.send("Safety App email change", request.getNewEmail(), "email-change-new", variables);
+        mailService.send("DASY App email change", request.getNewEmail(), "email-change-new", variables);
     }
 
     /**
