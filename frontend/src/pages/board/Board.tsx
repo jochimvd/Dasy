@@ -293,6 +293,8 @@ const Board = () => {
 
   return (
     <div class="overflow-x-scroll md:overflow-x-visible">
+      {/* Reference observations() to trigger pending state and loading transition when navigating to this page */}
+      {observations() && false}
       <DragDropProvider
         onDragStart={onDragStart}
         onDragOver={onDragOver}
