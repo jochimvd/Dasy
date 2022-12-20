@@ -17,6 +17,7 @@ import xyz.vandijck.safety.backend.request.ObservationSearchRequest;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -95,7 +96,9 @@ public class ObservationServiceImpl implements ObservationService {
         Observation patched = patcher.applyPatch(Observation.class, patch, observation);
         patched.setObserver(observation.getObserver());
         patched.setCategory(observation.getCategory());
-        patched.setLocation(observation.getLocation());
+        patched.setObservedCompany(observation.getObservedCompany());
+        patched.setSite(observation.getSite());
+        patched.setType(observation.getType());
         return save(patched);
     }
 
@@ -113,6 +116,22 @@ public class ObservationServiceImpl implements ObservationService {
     public boolean archiveOrDeleteById(DeleteRequest request, long id) {
         userService.validateDeleteRequest(request);
         return archiveOrDeleteById(id);
+    }
+
+    public long countByObservedAtBeforeAndCategoryId(ZonedDateTime before, long categoryId) {
+        return observationRepository.countByObservedAtBeforeAndCategoryIdAndTypeIdNot(before, categoryId, 1L);
+    }
+
+    public long countByObservedAtBetweenAndCategoryId(ZonedDateTime start, ZonedDateTime end, long categoryId) {
+        return observationRepository.countByObservedAtBetweenAndCategoryIdAndTypeIdNot(start, end, categoryId, 1L); // TODO: 1 is positive observation type
+    }
+
+    public long countByObservedAtBetweenAndSiteId(ZonedDateTime start, ZonedDateTime end, long siteId) {
+        return observationRepository.countByObservedAtBetweenAndSiteId(start, end, siteId);
+    }
+
+    public long countByObservedAtBetweenAndSiteIdAndTypeId(ZonedDateTime start, ZonedDateTime end, long siteId, long typeId) {
+        return observationRepository.countByObservedAtBetweenAndSiteIdAndTypeId(start, end, siteId, typeId);
     }
 
 }
