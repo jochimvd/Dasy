@@ -4,7 +4,8 @@ import { SeveritiesData } from "../../../services/SeverityService";
 
 const Severities: Component = () => {
   const [data] = useRouteData<SeveritiesData>();
-  const severities = () => data()?._embedded?.severities;
+  const severities = () =>
+    data()?._embedded?.severities.sort((a, b) => b.level - a.level);
 
   return (
     <>
