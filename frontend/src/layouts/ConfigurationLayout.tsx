@@ -3,9 +3,10 @@ import { For } from "solid-js";
 
 const navigation = [
   { name: "General", href: "/configuration", end: true },
-  { name: "Locations", href: "/configuration/locations" },
+  { name: "Sites", href: "/configuration/sites" },
+  { name: "Types", href: "/configuration/types" },
   { name: "Severities", href: "/configuration/severities" },
-  { name: "Consequences", href: "/configuration/consequences" },
+  { name: "Reoccurrences", href: "/configuration/reoccurrences" },
   { name: "Categories", href: "/configuration/categories" },
 ];
 

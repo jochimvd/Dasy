@@ -66,7 +66,7 @@ const Observation: Component = () => {
                   Observer Company
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900">
-                  {observation()?.observerCompany}
+                  {observation()?.observer.company}
                 </dd>
               </div>
               <div class="sm:col-span-1">
@@ -91,9 +91,15 @@ const Observation: Component = () => {
                 </dd>
               </div>
               <div class="sm:col-span-1">
-                <dt class="text-sm font-medium text-gray-500">Location</dt>
+                <dt class="text-sm font-medium text-gray-500">Site</dt>
                 <dd class="mt-1 text-sm text-gray-900">
-                  {observation()?.location.name}
+                  {observation()?.site}
+                </dd>
+              </div>
+              <div class="sm:col-span-1">
+                <dt class="text-sm font-medium text-gray-500">Type</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  {observation()?.type.name}
                 </dd>
               </div>
               <div class="sm:col-span-1">
@@ -102,12 +108,6 @@ const Observation: Component = () => {
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900">
                   {observation()?.immediateDanger ? "Yes" : "No"}
-                </dd>
-              </div>
-              <div class="sm:col-span-1">
-                <dt class="text-sm font-medium text-gray-500">Type</dt>
-                <dd class="mt-1 text-sm text-gray-900">
-                  {observation()?.type}
                 </dd>
               </div>
             </dl>

@@ -26,11 +26,13 @@ public class RootController {
         RootModel model = new RootModel();
 
         model.add(
+                // TODO: add analyses endpoint
                 linkTo(methodOn(ObservationController.class).findAll(new ObservationSearchRequest())).withRel("observations"),
                 linkTo(methodOn(CategoryController.class).findAll(new CategorySearchRequest())).withRel("categories"),
-                linkTo(methodOn(LocationController.class).findAll(new LocationSearchRequest())).withRel("locations"),
+                linkTo(methodOn(SiteController.class).findAll(new SiteSearchRequest())).withRel("sites"),
                 linkTo(methodOn(SeverityController.class).findAll(new SeveritySearchRequest())).withRel("severities"),
-                linkTo(methodOn(ConsequenceController.class).findAll(new ConsequenceSearchRequest())).withRel("consequences")
+                linkTo(methodOn(ReoccurrenceController.class).findAll(new ReoccurrenceSearchRequest())).withRel("reoccurrences"),
+                linkTo(methodOn(CompanyController.class).findAll(new CompanySearchRequest())).withRel("companies")
         );
 
         model.add(guard(userPolicy.allowGetAll(new UserSearchRequest()),

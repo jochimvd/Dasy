@@ -1,18 +1,17 @@
 import { Links } from "../utils/utils";
-import { ConsequenceDto, ConsequenceInput } from "./Consequence";
-import { SeverityDto, SeverityInput } from "./Severity";
+import { ReoccurrenceDto, ReoccurrenceInput } from "./Reoccurrence";
 
 export type CategoryDto = {
   id: number;
   name: string;
-  consequence: ConsequenceDto;
-  severity: SeverityDto;
+  severityLevel: number;
+  reoccurrence: ReoccurrenceDto;
   _links?: Links;
 };
 
 export type CategoryInput = {
   id?: number;
   name?: string;
-  severity?: SeverityInput;
-  consequence?: ConsequenceInput;
+  severityLevel?: number;
+  reoccurrence?: ReoccurrenceInput;
 };

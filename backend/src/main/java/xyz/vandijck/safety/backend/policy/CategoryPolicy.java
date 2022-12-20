@@ -23,9 +23,9 @@ public class CategoryPolicy extends CRUDPolicy<CategoryDto, CategorySearchReques
     static {
         ADMIN_EDITABLE_FIELDS = List.of(
                 "name",
-                "description"
-//                "severity", // TODO implement nested JSON patch
-//                "consequence"
+                "description",
+                "severityLevel"
+//                "reoccurrence" // TODO implement nested JSON patch
         );
     }
 

@@ -35,7 +35,7 @@ public class ObservationDto implements UniqueEntity {
     private ZonedDateTime observedAt;
 
     @JsonView(Views.Reader.class)
-    @NotBlank(message = "isBlank")
+    @NotBlank(message = "isEmpty")
     private String observedCompany;
 
     @JsonView(Views.Reader.class)
@@ -43,8 +43,8 @@ public class ObservationDto implements UniqueEntity {
     private Boolean immediateDanger;
 
     @JsonView(Views.Reader.class)
-    @NotNull(message = "isNull")
-    private LocationDto location;
+    @NotNull(message = "isEmpty")
+    private String site;
 
     @JsonView(Views.Reader.class)
     @NotNull(message = "isNull")
@@ -54,10 +54,11 @@ public class ObservationDto implements UniqueEntity {
     private Status status;
 
     @JsonView(Views.Reader.class)
-    private String type;
+    @NotNull(message = "isNull")
+    private TypeDto type;
 
     @JsonView(Views.Reader.class)
-    @NotBlank(message = "isBlank")
+    @NotBlank(message = "isEmpty")
     private String description;
 
     @JsonView(Views.Reader.class)

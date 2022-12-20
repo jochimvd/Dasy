@@ -16,8 +16,11 @@ const CategoryService = () => {
   const api = useService(AuthService);
 
   const Categories = {
-    all: () =>
-      api().send<Collection<"categories", CategoryDto>>("GET", "categories"),
+    all: (query?: string) =>
+      api().send<Collection<"categories", CategoryDto>>(
+        "GET",
+        "categories" + (query ? `?${query}` : "")
+      ),
     get: (id: string) => api().send<CategoryDto>("GET", `categories/${id}`),
     delete: (id: string) => api().send("DELETE", `categories/${id}`),
     update: (category: CategoryInput) =>
@@ -30,7 +33,7 @@ const CategoryService = () => {
     params,
   }) => createResource(() => params.id, Categories.get);
 
-  const categoriesData = () => createResource(Categories.all);
+  const categoriesData = () => createResource("size=50", Categories.all); // TODO: pagination
 
   return {
     categoryData,

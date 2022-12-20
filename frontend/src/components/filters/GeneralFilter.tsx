@@ -2,7 +2,7 @@ import { createSignal, Show } from "solid-js";
 import { Status } from "../../models/Status";
 import { ObservationSearchParams } from "../../pages/observations/Observations";
 import CategoryFilter from "./CategoryFilter";
-import LocationFilter from "./LocationFilter";
+import SiteFilter from "./SiteFilter";
 import StatusFilter from "./StatusFilter";
 import { clickOutside } from "../../utils/Directives";
 import DangerFilter from "./DangerFilter";
@@ -12,6 +12,7 @@ import {
   FunnelOutline,
   FunnelSolid,
 } from "../../utils/Icons";
+import TypeFilter from "./TypeFilter";
 
 const GeneralFilter = () => {
   let filterButton;
@@ -37,7 +38,8 @@ const GeneralFilter = () => {
             <Show
               when={
                 searchParams?.category ||
-                searchParams?.location ||
+                searchParams?.site ||
+                searchParams?.type ||
                 searchParams?.status ||
                 searchParams?.immediateDanger
               }
@@ -79,12 +81,16 @@ const GeneralFilter = () => {
                   setSearchParams({ status: filter });
                 }}
               />
-              <LocationFilter
-                filter={searchParams?.location
-                  ?.split(",")
-                  .map((c) => parseInt(c))}
+              <SiteFilter
+                filter={searchParams?.site?.split(",").map((c) => parseInt(c))}
                 setFilter={(filter) => {
-                  setSearchParams({ location: filter });
+                  setSearchParams({ site: filter });
+                }}
+              />
+              <TypeFilter
+                filter={searchParams?.type?.split(",").map((c) => parseInt(c))}
+                setFilter={(filter) => {
+                  setSearchParams({ type: filter });
                 }}
               />
               <CategoryFilter

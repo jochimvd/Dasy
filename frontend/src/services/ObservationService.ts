@@ -16,7 +16,7 @@ const ObservationService = () => {
   const api = useService(AuthService);
 
   const Observations = {
-    all: (query?: string | true) =>
+    all: (query?: string) =>
       api().send<Collection<"observations", ObservationDto>>(
         "GET",
         "observations" + (query ? `?${query}` : "")
@@ -44,13 +44,13 @@ const ObservationService = () => {
     ResourceReturn<ObservationDto>
   > = ({ params }) => createResource(() => params.id, Observations.get);
 
-  const observationsData = () => createResource(Observations.all);
+  const observationsData = () => createResource("", Observations.all);
 
   return {
     observationData,
     observationsData,
 
-    all(query?: string | true) {
+    all(query?: string) {
       return Observations.all(query);
     },
 

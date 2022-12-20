@@ -1,19 +1,19 @@
 import { Links } from "../utils/utils";
 import { CategoryDto, CategoryInput } from "./Category";
-import { LocationDto, LocationInput } from "./Location";
+import { SiteDto, SiteInput } from "./Site";
 import { Status } from "./Status";
+import { TypeDto, TypeInput } from "./Type";
 import { UserDto } from "./User";
 
 export type ObservationDto = {
   id: number;
   key: string;
   observer: UserDto;
-  observerCompany: string;
   observedAt: string;
-  location: LocationDto;
+  site: string;
   observedCompany: string;
   immediateDanger: boolean;
-  type: string;
+  type: TypeDto;
   category: CategoryDto;
   description: string;
   actionsTaken: string;
@@ -25,10 +25,11 @@ export type ObservationDto = {
 export type ObservationInput = {
   id?: number;
   observedAt?: string;
-  location?: LocationInput;
+  site?: string;
   category?: CategoryInput;
   observedCompany?: string;
   immediateDanger?: boolean;
+  type?: TypeInput;
   description?: string;
   actionsTaken?: string;
   furtherActions?: string;

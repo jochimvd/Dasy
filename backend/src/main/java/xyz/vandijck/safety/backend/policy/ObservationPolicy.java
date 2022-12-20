@@ -23,9 +23,7 @@ public class ObservationPolicy extends CRUDPolicy<ObservationDto, ObservationSea
     static {
         ADMIN_EDITABLE_FIELDS = List.of(
                 "observedAt",
-                "observedCompany",
                 "immediateDanger",
-                "type",
                 "description",
                 "actionsTaken",
                 "furtherActions",

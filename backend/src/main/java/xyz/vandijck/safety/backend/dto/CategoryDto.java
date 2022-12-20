@@ -31,10 +31,10 @@ public class CategoryDto implements UniqueEntity {
 
     @JsonView(Views.Reader.class)
     @NotNull(message = "isEmpty")
-    private ConsequenceDto consequence;
+    private ReoccurrenceDto reoccurrence;
 
     @JsonView(Views.Reader.class)
     @NotNull(message = "isEmpty")
-    private SeverityDto severity;
+    private Double severityLevel;
 
 }

@@ -40,11 +40,14 @@ public class Category implements UniqueEntity, Archivable {
     @JoinColumn(name = "severity_id", referencedColumnName = "id")
     private Severity severity;
 
+    @Column(name = "severity_level", nullable = false)
+    private Double severityLevel;
+
     @IndexedEmbedded
-    @JsonBackReference("consequenceCategoryReference")
+    @JsonBackReference("reoccurrenceCategoryReference")
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "consequence_id", referencedColumnName = "id")
-    private Consequence consequence;
+    @JoinColumn(name = "reoccurrence_id", referencedColumnName = "id")
+    private Reoccurrence reoccurrence;
 
     @Field(analyze = Analyze.NO, store = Store.YES)
     @Column(name = "archived", nullable = false)
@@ -58,12 +61,12 @@ public class Category implements UniqueEntity, Archivable {
         return id == category.id &&
                 archived == category.archived &&
                 name.equals(category.name) &&
-                severity.equals(category.severity) &&
-                consequence.equals(category.consequence);
+                severityLevel.equals(category.severityLevel) &&
+                reoccurrence.equals(category.reoccurrence);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, severity, consequence, archived);
+        return Objects.hash(id, name, severityLevel, reoccurrence, archived);
     }
 }

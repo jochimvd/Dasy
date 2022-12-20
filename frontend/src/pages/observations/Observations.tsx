@@ -5,29 +5,30 @@ import {
   createResource,
   createSignal,
   Show,
-  Suspense,
   untrack,
   useTransition,
 } from "solid-js";
-import GeneralFilter from "../../components/filters/GeneralFilter";
-import DateFilter from "../../components/filters/DateFilter";
-import Pagination from "../../components/Pagination";
-import SearchFilter from "../../components/filters/SearchFilter";
-import ObservationsTable from "./ObservationsTable";
 import ColumnSelector from "../../components/filters/ColumnSelector";
+import DateFilter from "../../components/filters/DateFilter";
+import GeneralFilter from "../../components/filters/GeneralFilter";
+import SearchFilter from "../../components/filters/SearchFilter";
+import Pagination from "../../components/Pagination";
 import ObservationService from "../../services/ObservationService";
+import { CubeOutline } from "../../utils/Icons";
+import ObservationsTable from "./ObservationsTable";
 
 export type ObservationSearchParams = {
   // String filters
   search?: string;
   observerName?: string;
   categoryName?: string;
-  locationName?: string;
+  siteName?: string;
   observerCompany?: string;
   // Collection filters
   status?: string;
   category?: string;
-  location?: string;
+  site?: string;
+  type?: string;
   immediateDanger?: string;
   // Paging
   page?: string;
@@ -43,10 +44,16 @@ const Observations: Component = () => {
     useSearchParams<ObservationSearchParams>();
 
   const observationService = ObservationService();
-  const [data] = createResource(queryString, observationService.all); // todo use data function
+  const [data] = createResource(queryString, observationService.all); // TODO: use data function
   const observations = () => data()?._embedded?.observations;
 
-  const [, start] = useTransition();
+  const [pending, start] = useTransition();
+
+  // createEffect(() => {
+  //   // TODO: this is not working, navigating to a single observation doesn't reset the loading indicator
+  //   console.log("pending " + pending());
+  //   loadingIndicator(pending());
+  // });
 
   createEffect(() => {
     const params = untrack(() => searchParams);
@@ -79,16 +86,28 @@ const Observations: Component = () => {
         </div>
       </div>
       <div class="flex flex-col">
-        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+        <div class="-my-2 sm:-mx-6 lg:-mx-8">
+          <div class="py-2 align-middle inline-block w-full sm:px-6 lg:px-8">
             <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-              {/* <Suspense> */}
-              <ObservationsTable
-                loading={data.loading}
-                observations={observations() ?? []}
-              />
+              <Show
+                when={observations()}
+                fallback={
+                  <div class="w-full py-12 bg-white">
+                    <div class="text-center">
+                      <CubeOutline class="mx-auto h-12 w-12 text-gray-400" />
+                      <h3 class="mt-2 text-sm font-medium text-gray-900">
+                        No observations found
+                      </h3>
+                      <p class="mt-1 text-sm text-gray-500">
+                        Try adjusting your search or filter to find what you're
+                        looking for.
+                      </p>
+                    </div>
+                  </div>
+                }
+              >
+                <ObservationsTable observations={observations() ?? []} />
 
-              <Show when={data()?.page.totalElements}>
                 <Pagination
                   pageMeta={data()!.page}
                   onPageChange={(page) => {
@@ -97,9 +116,8 @@ const Observations: Component = () => {
                       { scroll: true }
                     );
                   }}
-                ></Pagination>
+                />
               </Show>
-              {/* </Suspense> */}
             </div>
           </div>
         </div>

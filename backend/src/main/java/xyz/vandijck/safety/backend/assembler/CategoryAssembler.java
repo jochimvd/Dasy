@@ -13,7 +13,7 @@ import xyz.vandijck.safety.backend.entity.Category;
 import xyz.vandijck.safety.backend.policy.CategoryPolicy;
 import xyz.vandijck.safety.backend.request.CategorySearchRequest;
 import xyz.vandijck.safety.backend.request.DeleteRequest;
-import xyz.vandijck.safety.backend.service.ConsequenceService;
+import xyz.vandijck.safety.backend.service.ReoccurrenceService;
 import xyz.vandijck.safety.backend.service.SeverityService;
 import xyz.vandijck.safety.backend.service.UserService;
 
@@ -33,23 +33,23 @@ public class CategoryAssembler extends BaseAssembler<Category, CategoryDto> {
 
     private final CategoryPolicy categoryPolicy;
 
-    private final ConsequenceService consequenceService;
+    private final ReoccurrenceService reoccurrenceService;
 
     private final SeverityService severityService;
 
-    private final ConsequenceAssembler consequenceAssembler;
+    private final ReoccurrenceAssembler reoccurrenceAssembler;
 
     private final SeverityAssembler severityAssembler;
 
     @Autowired
     public CategoryAssembler(CategoryPolicy categoryPolicy, UserService userService,
-                             ConsequenceService consequenceService, ConsequenceAssembler consequenceAssembler,
+                             ReoccurrenceService reoccurrenceService, ReoccurrenceAssembler reoccurrenceAssembler,
                              SeverityService severityService, SeverityAssembler severityAssembler,
                              ObjectMapper objectMapper, ModelMapper modelMapper) {
         super(categoryPolicy, CategoryDto.class, userService, objectMapper, modelMapper);
         this.categoryPolicy = categoryPolicy;
-        this.consequenceService = consequenceService;
-        this.consequenceAssembler = consequenceAssembler;
+        this.reoccurrenceService = reoccurrenceService;
+        this.reoccurrenceAssembler = reoccurrenceAssembler;
         this.severityService = severityService;
         this.severityAssembler = severityAssembler;
     }
@@ -103,16 +103,14 @@ public class CategoryAssembler extends BaseAssembler<Category, CategoryDto> {
     @Override
     public Category convertToEntity(CategoryDto categoryDto) {
         Category category = modelMapper.map(categoryDto, Category.class);
-        category.setConsequence(consequenceService.findById(categoryDto.getConsequence().getId()));
-        category.setSeverity(severityService.findById(categoryDto.getSeverity().getId()));
+        category.setReoccurrence(reoccurrenceService.findById(categoryDto.getReoccurrence().getId()));
         return category;
     }
 
     @Override
     public CategoryDto convertToDto(Category category) {
         CategoryDto categoryDto = modelMapper.map(category, CategoryDto.class);
-        categoryDto.setConsequence(consequenceAssembler.convertToDto(category.getConsequence()));
-        categoryDto.setSeverity(severityAssembler.convertToDto(category.getSeverity()));
+        categoryDto.setReoccurrence(reoccurrenceAssembler.convertToDto(category.getReoccurrence()));
         return categoryDto;
     }
 

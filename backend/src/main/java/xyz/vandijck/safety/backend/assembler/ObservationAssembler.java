@@ -13,9 +13,7 @@ import xyz.vandijck.safety.backend.entity.Observation;
 import xyz.vandijck.safety.backend.policy.ObservationPolicy;
 import xyz.vandijck.safety.backend.request.DeleteRequest;
 import xyz.vandijck.safety.backend.request.ObservationSearchRequest;
-import xyz.vandijck.safety.backend.service.CategoryService;
-import xyz.vandijck.safety.backend.service.LocationService;
-import xyz.vandijck.safety.backend.service.UserService;
+import xyz.vandijck.safety.backend.service.*;
 
 import java.util.Collections;
 import java.util.Map;
@@ -39,23 +37,30 @@ public class ObservationAssembler extends BaseAssembler<Observation, Observation
 
     private final CategoryService categoryService;
 
-    private final LocationAssembler locationAssembler;
+    private final TypeAssembler typeAssembler;
 
-    private final LocationService locationService;
+    private final TypeService typeService;
+
+    private final SiteService siteService;
+
+    private final CompanyService companyService;
 
     @Autowired
     public ObservationAssembler(ObservationPolicy observationPolicy,
                                 UserService userService, UserAssembler userAssembler,
                                 CategoryService categoryService, CategoryAssembler categoryAssembler,
-                                LocationService locationService, LocationAssembler locationAssembler,
+                                TypeService typeService, TypeAssembler typeAssembler,
+                                SiteService siteService, CompanyService companyService,
                                 ObjectMapper objectMapper, ModelMapper modelMapper) {
         super(observationPolicy, ObservationDto.class, userService, objectMapper, modelMapper);
         this.userAssembler = userAssembler;
         this.observationPolicy = observationPolicy;
         this.categoryService = categoryService;
         this.categoryAssembler = categoryAssembler;
-        this.locationService = locationService;
-        this.locationAssembler = locationAssembler;
+        this.siteService = siteService;
+        this.typeService = typeService;
+        this.typeAssembler = typeAssembler;
+        this.companyService = companyService;
     }
 
     @Override
@@ -109,7 +114,9 @@ public class ObservationAssembler extends BaseAssembler<Observation, Observation
         Observation observation = modelMapper.map(observationDto, Observation.class);
         observation.setObserver(userService.findById(observationDto.getObserver().getId()));
         observation.setCategory(categoryService.findById(observationDto.getCategory().getId()));
-        observation.setLocation(locationService.findById(observationDto.getLocation().getId()));
+        observation.setType(typeService.findById(observationDto.getType().getId()));
+        observation.setSite(siteService.findElseCreate(observationDto.getSite()));
+        observation.setObservedCompany(companyService.findElseCreate(observationDto.getObservedCompany()));
         return observation;
     }
 
@@ -118,7 +125,9 @@ public class ObservationAssembler extends BaseAssembler<Observation, Observation
         ObservationDto observationDto = modelMapper.map(observation, ObservationDto.class);
         observationDto.setObserver(userAssembler.convertToDto(observation.getObserver()));
         observationDto.setCategory(categoryAssembler.convertToDto(observation.getCategory()));
-        observationDto.setLocation(locationAssembler.convertToDto(observation.getLocation()));
+        observationDto.setType(typeAssembler.convertToDto(observation.getType()));
+        observationDto.setSite(observation.getSite().getName());
+        observationDto.setObservedCompany(observation.getObservedCompany().getName());
         return observationDto;
     }
 

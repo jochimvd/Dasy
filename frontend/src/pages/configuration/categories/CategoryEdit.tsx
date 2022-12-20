@@ -1,8 +1,7 @@
 import { useNavigate, useRouteData } from "@solidjs/router";
 import { createComputed, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
-import SelectConsequence from "../../../components/SelectConsequence";
-import SelectSeverity from "../../../components/SelectSeverity";
+import SelectReoccurrence from "../../../components/SelectReoccurrence";
 import ConfigurationEditLayout from "../../../layouts/ConfigurationEditLayout";
 import { CategoryInput } from "../../../models/Category";
 import CategoryService, {
@@ -67,19 +66,27 @@ export const CategoryEdit = () => {
         </div>
 
         <div class="col-span-4 sm:col-start-1 sm:col-span-2">
-          <SelectSeverity
-            value={state.severity?.id}
-            setSeverity={(id) => {
-              setState("severity", { id: id });
-            }}
+          <label
+            for="severityLevel"
+            class="block text-sm font-medium text-gray-700"
+          >
+            Severity level
+          </label>
+          <input
+            type="number"
+            id="severityLevel"
+            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-gray-900 focus:border-gray-900 sm:text-sm"
+            placeholder="Severity level"
+            value={state.severityLevel ?? 0}
+            onInput={updateState("severityLevel")}
           />
         </div>
 
         <div class="col-span-4 sm:col-span-2">
-          <SelectConsequence
-            value={state.consequence?.id}
-            setConsequence={(id) => {
-              setState("consequence", { id: id });
+          <SelectReoccurrence
+            value={state.reoccurrence?.id}
+            setReoccurrence={(id) => {
+              setState("reoccurrence", { id: id });
             }}
           />
         </div>

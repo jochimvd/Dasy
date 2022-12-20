@@ -1,9 +1,11 @@
 type Collections =
   | "observations"
   | "categories"
-  | "locations"
+  | "sites"
+  | "types"
   | "severities"
-  | "consequences"
+  | "reoccurrences"
+  | "companies"
   | "users";
 
 export type Collection<K extends Collections, T> = {

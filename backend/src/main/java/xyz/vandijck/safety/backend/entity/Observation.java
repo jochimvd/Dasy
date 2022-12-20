@@ -41,23 +41,27 @@ public class Observation implements UniqueEntity, Archivable {
     private ZonedDateTime observedAt;
 
     @IndexedEmbedded
-    @JsonBackReference("locationObservationReference")
+    @JsonBackReference("siteObservationReference")
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "location_id", referencedColumnName = "id", nullable = false)
-    private Location location;
+    @JoinColumn(name = "site_id", referencedColumnName = "id", nullable = false)
+    private Site site;
 
-    @Field(store = Store.YES, normalizer = @Normalizer(definition = "asciiSortNormalizer"))
-    @SortableField
-    @Column(name = "observed_company", nullable = false)
-    @Analyzer(definition = "namelike")
-    private String observedCompany;
+    @IndexedEmbedded
+    @JsonBackReference("companyObservationReference")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
+    private Company observedCompany;
 
     @Field(analyze = Analyze.NO, store = Store.YES)
     @SortableField
     @Column(name = "immediate_danger", nullable = false)
     private Boolean immediateDanger;
 
-    private String type;
+    @IndexedEmbedded
+    @JsonBackReference("typeObservationReference")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "type_id", referencedColumnName = "id", nullable = false)
+    private Type type;
 
     @IndexedEmbedded
     @JsonBackReference("categoryObservationReference")
@@ -66,7 +70,7 @@ public class Observation implements UniqueEntity, Archivable {
     private Category category;
 
     @Column(name = "description", length = 1023)
-    @NotBlank(message = "isBlank")
+    @NotBlank(message = "isEmpty")
     private String description;
 
     @Column(name = "actions_taken", length = 1023)
@@ -87,12 +91,12 @@ public class Observation implements UniqueEntity, Archivable {
 
 
     public String getKey() {
-        String locationName = location.getName()
+        String siteName = site.getName()
                 .replaceAll("[^a-zA-Z]", "");
 
         return "SOR-" +
-                locationName
-                        .substring(0, Math.min(locationName.length(), 3))
+                siteName
+                        .substring(0, Math.min(siteName.length(), 3))
                         .toUpperCase() +
                 "-" + id;
     }
@@ -105,12 +109,12 @@ public class Observation implements UniqueEntity, Archivable {
         return id == observation.id &&
                 archived == observation.archived &&
                 observer.equals(observation.observer) &&
-                location.equals(observation.location) &&
+                site.equals(observation.site) &&
                 immediateDanger == observation.immediateDanger;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, observer, location, immediateDanger, archived);
+        return Objects.hash(id, observer, site, immediateDanger, archived);
     }
 }

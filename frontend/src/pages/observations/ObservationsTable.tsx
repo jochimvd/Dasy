@@ -1,9 +1,9 @@
 import { A, useSearchParams } from "@solidjs/router";
-import { Component, For, JSXElement, Show } from "solid-js";
+import { Component, For, JSXElement, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { ObservationDto } from "../../models/Observation";
 import { prettyFormatStatus } from "../../models/Status";
-import { ChevronDownS, ChevronUpDownS, CubeOutline } from "../../utils/Icons";
+import { ChevronDownS, ChevronUpDownS } from "../../utils/Icons";
 import { formatDate } from "../../utils/utils";
 import { ObservationSearchParams } from "./Observations";
 
@@ -22,7 +22,7 @@ const formatKey = (key: string) => {
 const keyColFormat = (observation: ObservationDto) => {
   return (
     <td class="px-2 md:px-6 py-4 text-sm font-medium text-gray-900">
-      <span class="lg:whitespace-nowrap">
+      <span class="lg:whitespace-nowrap hover:underline">
         <A href={observation.id.toString()}>
           {formatKey(observation.key)[0]}
           <span class="whitespace-nowrap">{formatKey(observation.key)[1]}</span>
@@ -75,7 +75,7 @@ export const observedAtCol: Column = {
 };
 
 export const observedCompanyCol: Column = {
-  key: "observedCompany",
+  key: "observedCompanyName",
   label: "Observed Company",
   sortable: true,
   formatFn: (o) => textColFormat(o.observedCompany),
@@ -102,11 +102,18 @@ export const categoryCol: Column = {
   formatFn: (o) => textColFormat(o.category.name),
 };
 
-export const locationCol: Column = {
-  key: "locationName",
-  label: "Location",
+export const siteCol: Column = {
+  key: "siteName",
+  label: "Site",
   sortable: true,
-  formatFn: (o) => textColFormat(o.location.name),
+  formatFn: (o) => textColFormat(o.site),
+};
+
+export const typeCol: Column = {
+  key: "typeName",
+  label: "Type",
+  sortable: true,
+  formatFn: (o) => textColFormat(o.type.name),
 };
 
 export const immediateDangerCol: Column = {
@@ -135,14 +142,14 @@ export const [observationTableColumns, setObservationTableColumns] =
       { default: true, show: true, col: observedAtCol },
       { default: false, show: false, col: observedCompanyCol },
       { default: false, show: false, col: statusCol },
+      { default: false, show: false, col: typeCol },
       { default: false, show: false, col: categoryCol },
-      { default: false, show: false, col: locationCol },
+      { default: false, show: false, col: siteCol },
       { default: true, show: true, col: descriptionCol },
     ],
   });
 
 type ObservationTableProps = {
-  loading: boolean;
   observations: ObservationDto[];
 };
 
@@ -169,8 +176,52 @@ const ObservationsTable: Component<ObservationTableProps> = (props) => {
     });
   };
 
+  let table: HTMLTableElement;
+
+  const isOverflowing = ({
+    clientWidth,
+    clientHeight,
+    scrollWidth,
+    scrollHeight,
+  }: Element) => {
+    return scrollHeight > clientHeight || scrollWidth > clientWidth;
+  };
+
+  onMount(() => {
+    let isDown = false;
+    let startX: number;
+    let scrollLeft: number;
+
+    table.addEventListener("mouseenter", (e) => {
+      if (!isOverflowing(table)) return;
+      table.classList.add("cursor-grab");
+    });
+    table.addEventListener("mousedown", (e) => {
+      if (!isOverflowing(table)) return;
+      isDown = true;
+      table.classList.add("cursor-grabbing");
+      startX = e.pageX - table.offsetLeft;
+      scrollLeft = table.scrollLeft;
+    });
+    table.addEventListener("mouseleave", () => {
+      isDown = false;
+      table.classList.remove("cursor-grabbing", "cursor-grab");
+    });
+    table.addEventListener("mouseup", () => {
+      isDown = false;
+      table.classList.remove("cursor-grabbing");
+    });
+    table.addEventListener("mousemove", (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - table.offsetLeft;
+      const walk = x - startX;
+      table.scrollLeft = scrollLeft - walk;
+    });
+  });
+
   return (
-    <>
+    <div class="overflow-x-auto" ref={table!}>
       <table class="w-full divide-y divide-gray-200">
         <thead class="bg-gray-50 whitespace-nowrap">
           <tr>
@@ -182,13 +233,13 @@ const ObservationsTable: Component<ObservationTableProps> = (props) => {
                     <Show
                       when={column.sortable}
                       fallback={
-                        <div class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <div class="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {column.label}
                         </div>
                       }
                     >
                       <button
-                        class="flex items-center gap-1 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        class="flex items-center gap-1 px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         onClick={() => {
                           setSort(column.key);
                         }}
@@ -221,33 +272,7 @@ const ObservationsTable: Component<ObservationTableProps> = (props) => {
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <For
-            each={props.observations}
-            fallback={
-              <td colspan={100}>
-                <div class="w-full my-12">
-                  <div class="text-center">
-                    <CubeOutline class="mx-auto h-12 w-12 text-gray-400" />
-                    {props.loading ? (
-                      <h3 class="mt-2 text-sm font-medium text-gray-900">
-                        Loading...
-                      </h3>
-                    ) : (
-                      <>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">
-                          No observations found
-                        </h3>
-                        <p class="mt-1 text-sm text-gray-500">
-                          Try adjusting your search or filter to find what
-                          you're looking for.
-                        </p>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </td>
-            }
-          >
+          <For each={props.observations}>
             {(observation) => (
               <tr>
                 <For
@@ -270,7 +295,7 @@ const ObservationsTable: Component<ObservationTableProps> = (props) => {
           </For>
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 

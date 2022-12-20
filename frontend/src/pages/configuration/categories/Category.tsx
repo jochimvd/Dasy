@@ -28,15 +28,12 @@ const Category: Component = () => {
       <p>
         <strong>Name:</strong> {category()?.name}
         <br />
-        <strong>Severity:</strong> {category()?.severity.name}
+        <strong>Severity level:</strong> {category()?.severityLevel}
         <br />
-        <strong class="ml-5">Level: </strong>
-        {category()?.severity.level}
+        <strong>Reoccurrence:</strong> {category()?.reoccurrence.name}
         <br />
-        <strong>Consequence:</strong> {category()?.consequence.name}
-        <br />
-        <strong class="ml-5">Probability: </strong>
-        {category()?.consequence.probability}
+        <strong class="ml-5">Rate: </strong>
+        {category()?.reoccurrence.rate}
       </p>
     </ConfigurationDetailLayout>
   );

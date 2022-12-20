@@ -25,20 +25,22 @@ public class ObservationSearchRequest extends SearchRequest {
 
     private String observerName;
 
-    private String observedCompany;
+    private String observedCompanyName;
 
     private String categoryName;
 
-    private String locationName;
+    private String siteName;
 
     // Collection filters
     private List<Long> category;
 
-    private List<Long> location;
+    private List<Long> site;
 
     private List<Status> status;
 
     private List<Boolean> immediateDanger;
+
+    private List<Long> type;
 
     // Temporal search filters
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -48,12 +50,15 @@ public class ObservationSearchRequest extends SearchRequest {
     private ZonedDateTime after;
 
     private static final Map<String, String> mapper = Map.of(
-            "key",          "observation_id",
-            "observerName", "observer.fullName",
-            "categoryName", "category.name",
-            "locationName", "location.name",
-            "category",     "category.category_id",
-            "location",     "location.location_id"
+            "key",                 "observation_id",
+            "observerName",        "observer.fullName",
+            "category",            "category.category_id",
+            "categoryName",        "category.name",
+            "site",                "site.site_id",
+            "siteName",            "site.name",
+            "type",                "type.type_id",
+            "typeName",            "type.name",
+            "observedCompanyName", "observedCompany.name"
     );
 
     @Override
@@ -65,25 +70,28 @@ public class ObservationSearchRequest extends SearchRequest {
     public void applyFilters(SearchBuilder sb) {
         sb.addFuzzyFilter(
                 search,
-                "observer.fullName", "observedCompany", "category.name", "location.name");
+                "observer.fullName", "observedCompany.name", "category.name", "site.name");
         sb.addFuzzyFilter(
                 observerName,
                 "observer.fullName");
         sb.addFuzzyFilter(
-                observedCompany,
-                "observedCompany");
+                observedCompanyName,
+                "observedCompany.name");
         sb.addFuzzyFilter(
                 categoryName,
                 "category.name");
         sb.addFuzzyFilter(
-                locationName,
-                "location.name");
+                siteName,
+                "site.name");
         sb.addOrFilter(
                 category,
                 "category.category_id");
         sb.addOrFilter(
-                location,
-                "location.location_id");
+                site,
+                "site.site_id");
+        sb.addOrFilter(
+                type,
+                "type.type_id");
         sb.addOrFilter(
                 status,
                 "status");
@@ -98,11 +106,12 @@ public class ObservationSearchRequest extends SearchRequest {
     public Link createLinkInternal(LinkRelation linkRel, UriComponentsBuilder builder) {
         addToBuilder(builder, "search", search);
         addToBuilder(builder, "observerName", observerName);
-        addToBuilder(builder, "observedCompany", observedCompany);
-        addToBuilder(builder, "categoryName", categoryName);
-        addToBuilder(builder, "locationName", locationName);
+        addToBuilder(builder, "observedCompanyName", observedCompanyName);
         addToBuilder(builder, "category", category);
-        addToBuilder(builder, "location", location);
+        addToBuilder(builder, "categoryName", categoryName);
+        addToBuilder(builder, "site", site);
+        addToBuilder(builder, "siteName", siteName);
+        addToBuilder(builder, "type", type);
         addToBuilder(builder, "status", status);
         addToBuilder(builder, "before", before);
         addToBuilder(builder, "after", after);

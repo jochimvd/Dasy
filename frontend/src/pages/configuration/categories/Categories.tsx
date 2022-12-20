@@ -4,7 +4,8 @@ import { CategoriesData } from "../../../services/CategoryService";
 
 const Categories: Component = () => {
   const [data] = useRouteData<CategoriesData>();
-  const categories = () => data()?._embedded?.categories;
+  const categories = () =>
+    data()?._embedded?.categories.sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <>
@@ -44,7 +45,7 @@ const Categories: Component = () => {
                           scope="col"
                           class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
-                          Consequence
+                          Reoccurrence
                         </th>
                         <th
                           scope="col"
@@ -79,18 +80,13 @@ const Categories: Component = () => {
                             <td class="px-6 py-4 text-sm text-gray-500">
                               <span
                                 class="cursor-help"
-                                title={category.consequence.name}
+                                title={category.reoccurrence.name}
                               >
-                                {category.consequence.probability}
+                                {category.reoccurrence.rate}
                               </span>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500">
-                              <span
-                                class="cursor-help"
-                                title={category.severity.name}
-                              >
-                                {category.severity.level}
-                              </span>
+                              <span>{category.severityLevel}</span>
                             </td>
                             {category._links?.put && (
                               <td class="px-6 py-4 text-right text-sm font-medium">
